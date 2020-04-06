@@ -1,0 +1,390 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script
+          src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous">
+      </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="js/secure.js"></script>
+        <script>
+
+        /*
+            Default 
+        */
+		const config =  {
+			storefronts: [
+                "fastspringexamplesii.test.onfastspring.com/popup-fastspringexamplesii",
+				"fastspringexamplesii.test.onfastspring.com"
+			],
+			accessKey: "K2HOU37OQS6HQGRD5I2ZEG"
+		};
+
+        /*
+            When page is loaded check localStorage to determine whether we are using the 
+            default fastspringexamples storefronts or a custom one from the user
+        */
+
+		const storefrontToUse = sessionStorage.getItem('FSsecure-storefrontToUse') || config.storefronts[0];
+        let accessKeyToUse = config['accessKey'];
+        if (config.storefronts.indexOf(storefrontToUse) < 0 && sessionStorage.getItem('FSsecure-accessKeyToUse')) {
+            accessKeyToUse = sessionStorage.getItem('FSsecure-accessKeyToUse');
+        }
+        
+        document.write(
+            '<scr' + 'ipt ' + `
+                id="fsc-api"
+                src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js" type="text/javascript"
+                data-storefront=${storefrontToUse}
+                data-markup-helpers-callback="markupHelpersCallback"
+                data-before-requests-callback="beforeRequestsCallback"
+                data-after-requests-callback="afterRequestsCallback"
+                data-after-markup-callback="afterMarkupCallback"
+                data-popup-closed="popupClosed"
+                data-decorate-callback="decorateCallback"
+                data-error-callback="errorCallback"
+                data-data-callback="dataCallback"
+                data-access-key=${accessKeyToUse}
+              > ` + 
+            '<\/scr' + 'ipt>'
+        );
+
+	</script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <a href="#" data-toggle="modal" data-target="#updateStorefront"> Change storefront in use </a>
+            </div>
+
+
+
+<!-- Update Storefront Modal -->
+    <div class="modal fade" id="updateStorefront" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Change storefront</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                   <div class="accordion" id="store-accordion">
+                       <div class="card">
+                           <div class="card-header" id="headingOne">
+                               <h2 class="mb-0">
+                                   <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                       Select available storefronts
+                                   </button>
+                               </h2>
+                           </div>
+                                
+                           <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#store-accordion">
+                               <div class="card-body">
+                                   <form name="storefronts" id="storefronts">
+                                        <!-- Radio inputs will be generated automatically -->
+                                   </form>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="card">
+                           <div class="card-header" id="headingTwo">
+                               <h2 class="mb-0">
+                                   <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                       Add custom storefront
+                                   </button>
+                               </h2>
+                           </div>
+                           <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#store-accordion">
+                               <div class="card-body">
+                                   <form id="popupFormStorefront" name="popupFormStorefront" onsubmit="setCustomStorefront(); return false;" class="needs-validation" novalidate>
+                                       <div class="form-group">
+                                           <label for="storefrontId" class="col-form-label">Storefront Id:</label>
+                                           <input type="text" class="form-control" id="storefrontId" name="storefrontId" required="required"
+                                                                                                                         pattern="^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(\/[a-z0-9-]*)?$"
+                                                                                                                         title="....test.onfastspring.com...">
+                                           <div class="invalid-feedback"> Please insert a valid storefrontId</div>
+                                       </div>
+                                       <div class="form-group">
+                                           <label for="accessKey" class="col-form-label"> Access Key:</label>
+                                           <input class="form-control" type="text" id="accessKey" name="accessKey" pattern=".{22,}" required="required">
+                                           <div class="invalid-feedback"> Please insert a valid 22 characters access key</div>
+                                       </div>
+                                       <button type="submit" class="btn btn-primary" id="addStorefrontBtn"> Add </button>
+                                   </form>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+            </div>
+         </div>
+   </div>
+
+
+
+
+
+
+
+
+
+            <div class="row">
+                <div class="col-6">
+                    <div id='raw-code'>
+                        <form id="formRawPayload" name="formRawPayload" onsubmit="return false;" class="needs-validation" novalidate="">
+                            <div class="form-row">
+                                <h5> Raw payload </h5>
+                                <textarea class="form-control" name="payload" rows="13">
+{
+    "contact": {
+        "email": "myName@email.com",
+        "firstName": "John",
+        "lastName": "Doe"
+    },
+    "items": [
+        {
+            "product": "enterprise",
+            "quantity": 1
+        }
+    ]   
+}
+                                </textarea>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-primary" onclick="encryptPayload()">
+                            Encrypt Payload
+                        </button>
+
+                    </div>
+                    <br/>
+                    <h5> Encrypted payload </h5>
+                    <div class="card card-body" style="background-color: #8080800d;">
+                        <pre>
+                            <code id="encrypted-code">
+                           </code>
+                           </pre>
+                       </div>
+                       <button type="button" class="btn btn-primary" onclick="secureCall()">
+                            Execute
+                        </button>
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-primary" onclick="createKeys2()">
+                        Create new keys
+                    </button>
+
+                    <div id='keys-container'>
+                        <div id="accordion"
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        Private Key
+                                    </button>
+                                </h5>
+                            </div>
+
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body" id='privateKey'>
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Public Certificate
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body" id='publicKey'>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade bd-example-modal-lg" id="createKeysModal" tabindex="-1" role="dialog" aria-labelledby="createKeysModal" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"> Keys </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="charge-form-wrapper">
+                        <div class="modal-body" >
+
+                            <div id="initial-container">
+                                Thank you for selecting your storefront... please select one of the options:
+                                <form name="keys-form" id="keys-form">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="radio-storefront" value="fastspringexamples.test.onfastspring.com/popup-fastspringexamples">
+                                        <label class="form-check-label" for="exampleRadios1">
+                                            I need to create new keys:
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="radio-storefront" value="fastspringexamples.test.onfastspring.com">
+                                        <label class="form-check-label" for="exampleRadios1">
+                                            I already have a private key and a public cert uploaded in my dashboard
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="gotkeys-container" style="display:none">
+                                Please copy-paste your key here:
+                                <form name="custom-key-form" id="keys-form">
+                                    <textarea class="form-control" name="custom-privateKey" rows="13">
+                                    </textarea>
+                                </form>
+                            </div>
+                            <div id="keys-form-container" style="display:none">
+                                In order to generate a public certificate, there is some signing information that needs to be included:
+                                <form id="popupFormCustomerInfo" name="popupFormCustomerInfo" onsubmit="addCustomerInfo(); return false;" class="needs-validation" novalidate="">
+                                    <div class="form-group">
+                                        <label for="fname" class="col-form-label"> Country Name: </label>
+                                        <input class="form-control" type="text" id="fname" name="fname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lname" class="col-form-label"> State or Province Name: </label>
+                                        <input class="form-control" type="text" id="lname" name="lname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lname" class="col-form-label"> Postal code: </label>
+                                        <input class="form-control" type="text" id="lname" name="lname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lname" class="col-form-label"> Email Address: </label>
+                                        <input class="form-control" type="email" id="lname" name="lname">
+                                    </div>
+                                </form>                                
+                            </div>
+                            <div id="new-keys-container" style="display:none;text-align: center;">
+                                Great! Please now proceed to..
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-step="initial" id="createKeysBtn"> Create keys </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade bd-example-modal-lg" id="publicCrtModal" tabindex="-1" role="dialog" aria-labelledby="publicCrtModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"> Upload your public certificate </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="charge-form-wrapper">
+                            <div class="modal-body" style="text-align: center;">
+                                <p> Great! Please now proceed to upload the public certificate to your dashboard. </p>
+                                <pre id="publicKey-modal"> </p>
+                                <p> Make sure to keep your private key stored secretly.. </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal"> Done! </button>
+                            </div>
+                        <div>
+                    </div>
+                </div>
+            </div>
+
+        <script
+            id="fsc-api"
+            src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.3/fastspring-builder.min.js"
+            type="text/javascript"
+            data-storefront="ashascompany.test.onfastspring.com/popup-ashascompany"
+            data-access-key="SEC4XLYUSTY48G04ZWZM-G"
+        >
+        </script>
+        <script>
+            function createKeys2() {
+                $('#createKeysModal').modal('show');
+            }
+
+            function createKeys() {
+                $.post(`${window.location.origin}/keys/new`)
+                    .done((resKey) => {
+                        if (resKey) {
+                            $('#privateKey').html(`<pre> ${resKey.privateKey} </pre>`);
+                            $('#publicKey').html(`<pre> ${resKey.publicCrt} </pre>`);
+                            $('#publicKey-modal').html(resKey.publicCrt);
+                            $('#publicCrtModal').modal('show');
+                        } else {
+                            console.log('eerr');
+                        }
+                    })
+                    .fail(() => {
+                        forceLogout('An unexpected server error occurred, please login again.');
+                    });
+            }
+
+            function encryptPayload() {
+                const rawPayload = document.getElementById('formRawPayload').payload.value;
+                const JSONpayload = JSON.parse(rawPayload);
+                console.log(JSONpayload);
+
+                // Create AJAX request to our backend
+                    
+                const Http = new XMLHttpRequest();
+                    const url= `${window.location.origin}/encrypt`;
+                    Http.open('POST', url, true);
+                    Http.setRequestHeader("Content-Type", "application/json");
+                   
+                    Http.onreadystatechange = function(){
+                        if (this.readyState === 4 && this.status === 200) {
+                        const resEncrypted = JSON.parse(this.responseText);
+                        
+                        $('#encrypted-code').html(`
+const securePayload = "${resEncrypted.securePayload}";
+const secureKey = "${resEncrypted.secureKey}";
+
+fastspring.builder.secure(securePayload, secureKey);
+fastspring.builder.checkout();`);
+}
+                    };
+                    Http.send(JSON.stringify(JSONpayload));
+/*
+                $.post(`${window.location.origin}/encrypt`, JSONpayload )
+                    .done((resEncrypted) => {
+                        if (resEncrypted) {
+                        $('#encrypted-code').html(`
+const securePayload = "${resEncrypted.securePayload}";
+const secureKey = "${resEncrypted.secureKey}";
+
+fastspring.builder.secure(securePayload, secureKey);
+fastspring.builder.checkout();`);
+                        } else {
+                            console.log('eerr');
+                        }
+                    })
+                    .fail(() => {
+                        forceLogout('An unexpected server error occurred, please login again.');
+                    });
+                    */
+            }
+
+            function secureCall() {
+                eval($("#encrypted-code").html());
+            }
+        </script>
+    </body>
+</html>
