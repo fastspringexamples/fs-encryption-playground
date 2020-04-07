@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
     const storefronts = document.getElementById('storefronts');
+    const keysForm = document.getElementById('keys-form');
     const popupFormStorefront = document.getElementById('popupFormStorefront');
     
 
@@ -59,41 +60,64 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const createKeysBtn = document.getElementById('createKeysBtn');
+
+     // Enable 'next' button once an option is selected
+    keysForm.addEventListener('change', function (event) {
+        $(createKeysBtn).removeAttr("disabled");
+    }, false);
+
+
     createKeysBtn.setAttribute('data-step', 'initial');
     createKeysBtn.onclick = function () {
         const step = this.getAttribute('data-step');
         let nextStep;
         switch (step) {
             case 'initial':
-                // Get initial
-                $('#initial-container').fadeOut();
-                $('#keys-form-container').fadeIn();
-                $('#new-keys-container').fadeOut();
-                // TODO add 
+                const radios = document.getElementsByName('radio-keys');
+                for (var i = 0, length = radios.length; i < length; i++) {
+                    if (radios[i].checked) {
+                        // do whatever you want with the checked radio
+                        nextStep = radios[i].value;
+                        // only one radio can be logically checked, don't check the rest
+                        break;
+                    }
+                }
+                break;
+            case 'existing-keys':
                 nextStep = 'keys-form';
                 break;
-            case 'gotkeys':
-                // Get initial
-                $('#initial-container').fadeOut();
-                $('#gotkeys-container').fadeIn();
-                nextStep = 'keys-form';
+            case 'new-keys-form':
+                nextStep = 'new-keys-result';
                 break;
-            case 'keys-form':
-                $('#keys-form-container').fadeOut();
-                $('#initial-container').fadeOut();
-                $('#new-keys-container').fadeIn();
-                nextStep = 'new-keys';
-                break;
-            case 'new-keys':
-                // call reset
+            case 'new-keys-result':
                 $('#createKeysModal').modal('hide');
                 break;
             default:
                 nextStep = 'initial';
                 break;
         }
+
+        displayStep(nextStep);
         this.setAttribute('data-step', nextStep);
     };
+
+    function displayStep(currentStep) {
+        console.log('EE', currentStep);
+        const steps = ['initial', 'existing-keys', 'new-keys-form', 'new-keys-result'];
+        steps.forEach((step) => {
+            const stepContainer = $(`#${step}-container`);
+            if (step !== currentStep) {
+                stepContainer.fadeOut();
+            } else {
+                stepContainer.fadeIn();
+            }
+        });
+    }
+
+    function resetKeyCreationSteps() {
+        displayStep('initial');
+        createKeysBtn.setAttribute('initial');
+    }
 });
 
 
@@ -147,8 +171,8 @@ $(function () {
 });
 
 /* Prevent default submit on forms when pressing Enter key */
-$('form input').keydown(function(event){
-    if(event.keyCode == 13) {
+$('form input').keydown(function(event) {
+    if (event.keyCode == 13) {
         event.preventDefault();
         return false;
     }

@@ -56,8 +56,12 @@
     <body>
         <div class="container">
             <div class="row">
-                <a href="#" data-toggle="modal" data-target="#updateStorefront"> Change storefront in use </a>
+                <button type="button" class="btn btn-success"> 
+                    <a href="#" data-toggle="modal" data-target="#updateStorefront" style="color:white"> Change storefront in use </a>
+                </button>
             </div>
+            <br>
+            <br>
 
 
 
@@ -147,7 +151,7 @@
     },
     "items": [
         {
-            "product": "enterprise",
+            "product": "phot-io-main-app",
             "quantity": 1
         }
     ]   
@@ -218,65 +222,180 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"> Keys </h5>
+                        <h5 class="modal-title" id="keys-modal-title"> Keys </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div id="charge-form-wrapper">
                         <div class="modal-body" >
-
                             <div id="initial-container">
-                                Thank you for selecting your storefront... please select one of the options:
+                                <p> Thanks for selecting your storefront.</p>
+                                <p>
+                                The process of passing data securely through SBL requires a pair of private and public keys which will be used to encrypt the payload containing
+                                the custom buyer's shopping cart. FastSpring instantly decrypts this payload upon receipt and applies the decrypted data to the current session.
+                                This is why, as a first step, you need to define this keys pair. Please select one of the below option:
+                                </p>
                                 <form name="keys-form" id="keys-form">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="radio-storefront" value="fastspringexamples.test.onfastspring.com/popup-fastspringexamples">
+                                        <input class="form-check-input" type="radio" name="radio-keys" value="new-keys-form">
                                         <label class="form-check-label" for="exampleRadios1">
-                                            I need to create new keys:
+                                            I need to create new keys
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="radio-storefront" value="fastspringexamples.test.onfastspring.com">
+                                        <input class="form-check-input" type="radio" name="radio-keys" value="existing-keys">
                                         <label class="form-check-label" for="exampleRadios1">
                                             I already have a private key and a public cert uploaded in my dashboard
                                         </label>
                                     </div>
                                 </form>
                             </div>
-                            <div id="gotkeys-container" style="display:none">
-                                Please copy-paste your key here:
+                            <div id="existing-keys-container" style="display:none">
+                                Please paste your key here:
                                 <form name="custom-key-form" id="keys-form">
                                     <textarea class="form-control" name="custom-privateKey" rows="13">
                                     </textarea>
                                 </form>
                             </div>
-                            <div id="keys-form-container" style="display:none">
-                                In order to generate a public certificate, there is some signing information that needs to be included:
+                            <div id="new-keys-form-container" style="display:none">
+                                <p> In order to generate a public certificate, there is some signing information that needs to be included: </p>
                                 <form id="popupFormCustomerInfo" name="popupFormCustomerInfo" onsubmit="addCustomerInfo(); return false;" class="needs-validation" novalidate="">
-                                    <div class="form-group">
-                                        <label for="fname" class="col-form-label"> Country Name: </label>
-                                        <input class="form-control" type="text" id="fname" name="fname">
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <label for="streetAddress" class="col-form-label"> State/Province: </label>
+                                            <input class="form-control" type="text" id="state-province" name="state-province">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="streetAddress" class="col-form-label"> Locality: </label>
+                                            <input class="form-control" type="text" id="locality" name="locality">
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="lname" class="col-form-label"> State or Province Name: </label>
-                                        <input class="form-control" type="text" id="lname" name="lname">
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <label for="streetAddress" class="col-form-label"> Street Address: </label>
+                                            <input class="form-control" type="text" id="streetAddress" name="streetAddress">
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="locality" class="col-form-label"> Postal code: </label>
+                                            <input class="form-control" type="text" id="postal-code" name="postal-code">
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="country" class="col-form-label"> 2 Digit Country: </label>
+                                            <input class="form-control" type="text" id="locality" name="locality">
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="lname" class="col-form-label"> Postal code: </label>
-                                        <input class="form-control" type="text" id="lname" name="lname">
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <label for="organizationName" class="col-form-label"> Organization Name: </label>
+                                            <input class="form-control" type="email" id="organizationName" name="organizationName">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="organizationUnit" class="col-form-label"> Organization Unit: </label>
+                                            <input class="form-control" type="text" id="organizationUnit" name="organizationUnit">
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="lname" class="col-form-label"> Email Address: </label>
-                                        <input class="form-control" type="email" id="lname" name="lname">
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <label for="emailAddress" class="col-form-label"> Email Address: </label>
+                                            <input class="form-control" type="email" id="emailAddress" name="emailAddress">
+                                        </div>
                                     </div>
                                 </form>                                
                             </div>
-                            <div id="new-keys-container" style="display:none;text-align: center;">
-                                Great! Please now proceed to..
-                            </div>
+                            <div id="new-keys-result-container" style="display:none;text-align: center;">
+                                <p> Great! Please now proceed to securely store the private key in your system and upload the public certificate to your dashboard. </p>
+                                
+                                <p> Once you have done, the next step is to create the payload representing the custom buyer's session. Click on the "Next" button when ready.</p>
+                            
+                                <div id="accordion"
+                                    <div class="card">
+                                        <div class="card-header" id="headingOne">
+                                            <h5 class="mb-0">
+                                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOneNew" aria-expanded="true" aria-controls="collapseOneNew">
+                                                    Private Key
+                                                </button>
+                                            </h5>
+                                        </div>
+
+                                        <div id="collapseOneNew" class="collapse" aria-labelledby="headingOneNew" data-parent="#accordion">
+                                            <div class="card-body">
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAkpLnQwoxuYe0yIgAAEnfax3ZhuwIBy9SAlZtIaTq17A8la+1
+vSaq+b+S9pCYHakaVM5l/TxamKXuZCAlNFeEB4RLhSHTlrfPD8PTnElTLinCn8bw
+tMDiAcGYoFQCZDBi/V7DSxWNQ4nXqoj6g2fHHWl0QhBZxaGn3n1F2poUVGv5QpIc
+qAy1Cr5DN2BSQf1Np5qNuZUew6DttODtP79Rfm/l48QwWOLwxArbkhiohZ0PFX2M
+A1dn2RZllzB4XP8woD7mqkcVg26pUPdqafgHyCjmZgmMsTJxbXtxX09BrB1x9IqJ
+W0KaiW8O/M8jGSkBgLV4u7gj/3JUu1c01rzyPwIDAQABAoIBAC19knDoFQ6z45Pp
+QbbVNpYUKZMKZmN0eEtpb21ltc1DUUpTwl/2RFJG9uG3dr6d4SI4/MZfmO6PcTF6
+GJHqJ3v9v0KOgRDh8029RUvYJgzJwTG9mK9AveQ1pZz89dEKg26Hnq0K/1Da0yiG
+Ytmtt8qVFBP85x/DUEppLujtsSmR8QiQwjiHvRnAwT4rv7PnMd66hOgOvMwNuhWH
+Fn4DvOipuKOuq4KtSgyBr5Y4k2cep0ooqnZJ9NirrSeSfkJ+Jdi8g65Qec+uSptM
+pgQbaLfVvt/RCRiWtITipP4s4Y44X+XnGeQpnPsjwFpZNFiFDKVMNlgdJB7hmecw
+23z3d8ECgYEAwtdoRmP8valwww6uSSMlUWXZ7Nt+TdDyZnVdMxBZ1p2dYbDKW0cJ
+QP16VNTXFGNgaXHwko0SSwEEh1ylRYL5L0mKCFwT8H4Pmc0gifGkG7947Kne8gd6
+vKvWbVBCl2Mny5kiPYG1YGnm6snDII7sI/1PQOL+xPXHGCDPB74k5McCgYEAwJTt
+MANlVFjSUjVRwQgz5DfuMcaiG5K+j6o6ul9lizwp8qLzMnDwvDAjuz/YysLPEV14
+4RvL2DEfPJVEsZsWkG5Jx/en/ebPptRZWjFTGypjEN+pAb9RV6zc7LBUG16IbTz2
+OBLmX0SGiWpBPXimbBvUoJvQbQh9Qz01oN1aHskCgYEAtpSudU/bFkvCjDakoYqa
+vMUpyugAWqFTlSmj1WccGJ4ITfQiHBjcFhex2+67QbLCNO19l4c0vi5M9R+fDB1o
+rqRGAgFu+ezXZ7OuKzXSJ+JsSbIBZmIV5NlODY+pZz2WnBZ63JJAygFTT28UN91W
+cX89Fjvgq+b406Zi+wl2fx8CgYEAiI8SQeGmkNELEtBMUJ0IbuRaO2Gmwfakuirz
+ygSrdLgM5sk1uqbrjgZ0z+rOR7ksLBwkAzw6p+rtQ4B1XZujvHb4SpwKu7hXtu0N
+Dy+6xqCf7u8qYNrRS2KApjXC7kVyaEO6NLjyMsvcusRlzrknCbISbHEQssA6Utus
+k41iwkECgYA2CEgb+LSzKG7ghWctcQrfqLAUtxzWhbiae3a+yjVhfI1X1/bkxD7u
+Zls/8NHQZEJKGVdLchk9nN0J40OVBmJw6GJVYeKv42bz9o11acm0mGzIcBLt5FEO
+zRE9DBYeBY2tAa6c0bk+LUhlXa4ldpmyf0MBzV0fgnLToPpPiQDD7Q==
+-----END RSA PRIVATE KEY-----
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header" id="headingTwo">
+                                            <h5 class="mb-0">
+                                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwoNew" aria-expanded="false" aria-controls="collapseTwoNew">
+                                                    Public Certificate
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseTwoNew" class="collapse" aria-labelledby="headingTwoNew" data-parent="#accordion">
+                                            <div class="card-body">
+                                                -----BEGIN CERTIFICATE-----
+MIIEoTCCA4mgAwIBAgIJAMjTHDIButEHMA0GCSqGSIb3DQEBCwUAMIHtMQswCQYD
+VQQGEwJVUzESMBAGA1UECAwJTG91aXNpYW5hMRAwDgYDVQQHDAdTbGlkZWxsMQ4w
+DAYDVQQRDAU3MDQ1ODEZMBcGA1UECQwQMTAwMSBHYXVzZSBCbHZkLjEMMAoGA1UE
+CgwDU01IMQswCQYDVQQLDAJJVDEdMBsGA1UEAwwUY2VydGlmaWNhdGV0b29scy5j
+b20xITAfBgNVBAMMGHd3dy5jZXJ0aWZpY2F0ZXRvb2xzLmNvbTEwMC4GCSqGSIb3
+DQEJARYhbHlhcy5zcGllaGxlckBzbGlkZWxsbWVtb3JpYWwub3JnMB4XDTIwMDQw
+MTEzMDgwNVoXDTIxMDQwMTEzMDgwNVowge0xCzAJBgNVBAYTAlVTMRIwEAYDVQQI
+DAlMb3Vpc2lhbmExEDAOBgNVBAcMB1NsaWRlbGwxDjAMBgNVBBEMBTcwNDU4MRkw
+FwYDVQQJDBAxMDAxIEdhdXNlIEJsdmQuMQwwCgYDVQQKDANTTUgxCzAJBgNVBAsM
+AklUMR0wGwYDVQQDDBRjZXJ0aWZpY2F0ZXRvb2xzLmNvbTEhMB8GA1UEAwwYd3d3
+LmNlcnRpZmljYXRldG9vbHMuY29tMTAwLgYJKoZIhvcNAQkBFiFseWFzLnNwaWVo
+bGVyQHNsaWRlbGxtZW1vcmlhbC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCSkudDCjG5h7TIiAAASd9rHdmG7AgHL1ICVm0hpOrXsDyVr7W9Jqr5
+v5L2kJgdqRpUzmX9PFqYpe5kICU0V4QHhEuFIdOWt88Pw9OcSVMuKcKfxvC0wOIB
+wZigVAJkMGL9XsNLFY1DideqiPqDZ8cdaXRCEFnFoafefUXamhRUa/lCkhyoDLUK
+vkM3YFJB/U2nmo25lR7DoO204O0/v1F+b+XjxDBY4vDECtuSGKiFnQ8VfYwDV2fZ
+FmWXMHhc/zCgPuaqRxWDbqlQ92pp+AfIKOZmCYyxMnFte3FfT0GsHXH0iolbQpqJ
+bw78zyMZKQGAtXi7uCP/clS7VzTWvPI/AgMBAAGjQjBAMB0GA1UdDgQWBBSZJeBF
+l6H0kJA2tu6AjCnPZtZLwDAfBgNVHSMEGDAWgBSZJeBFl6H0kJA2tu6AjCnPZtZL
+wDANBgkqhkiG9w0BAQsFAAOCAQEAkOCxNyvyr2KZ81tfhpoyfxCezJmKBpXJZoCe
+Msv424peV9rZVXAv7rMe/VbBXIl2XIMSMhzDCslQ5PnRm2Pa2YtOrobkqOzaW2sC
+nyAnFOWbQ3pdYkPkpNSFhknXIkMx88VhyVTR02Ht8Gp7e8PzPLIZ7c2Q470MceUd
+sI3A6QoVIExN/DvcPe7il/D0V8IKTEovrgYLU69qxU9F58qn7m8YVUoKeSYwxZNM
++gL6mJi/JE+9xhpC7/vhwBe36Rn5P+0FWZjeN7yaemaExRXYrlMIRM5ReI2W4GSS
+g0SfZbVnba4EOmlPcnm/AKE99W40PihwUCGRgoOn5Luu/XFuRA==
+-----END CERTIFICATE-----
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-step="initial" id="createKeysBtn"> Create keys </button>
+                            <button disabled type="button" class="btn btn-primary" data-step="initial" id="createKeysBtn"> Next </button>
                         </div>
                     </div>
                 </div>
@@ -307,14 +426,6 @@
                 </div>
             </div>
 
-        <script
-            id="fsc-api"
-            src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.3/fastspring-builder.min.js"
-            type="text/javascript"
-            data-storefront="ashascompany.test.onfastspring.com/popup-ashascompany"
-            data-access-key="SEC4XLYUSTY48G04ZWZM-G"
-        >
-        </script>
         <script>
             function createKeys2() {
                 $('#createKeysModal').modal('show');

@@ -5,6 +5,37 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const NodeOpenssl = require('node-openssl-cert');
+
+function createNewKeys() {
+    const openssl = new NodeOpenssl();
+
+    const rsakeyoptions = {
+        rsa_keygen_bits: 2048,
+        format: 'PKCS1'
+    };
+
+    const csroptions = {
+        hash: 'sha512',
+        subject: {
+            organizationName: 'FastSpringExamples',
+        }
+    };
+
+    return new Promise((resolve, reject) => {
+        openssl.generateRSAPrivateKey(rsakeyoptions, function (err, privateKey, cmd) {
+            openssl.generateCSR(csroptions, privateKey, null, function (err, csr, cmd) {
+                if (err) {
+                    reject(err);
+                } else {
+                    openssl.selfSignCSR(csr, {}, privateKey, null, function(err, publicCrt, cmd) {
+                        resolve({ privateKey, publicCrt });
+                    });
+                }
+            });
+        });
+    });
+}
 
 
 function encrypt(payload) {
@@ -22,4 +53,4 @@ function encrypt(payload) {
     };
 }
 
-module.exports = { encrypt };
+module.exports = { encrypt, createNewKeys };
