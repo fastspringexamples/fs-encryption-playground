@@ -2,7 +2,6 @@ const express = require('express');
 const util = require('util');
 const path = require('path');
 
-
 const fs = require('fs');
 
 const privateKeyPath = path.resolve(__dirname, 'keys/privatekey.pem');
@@ -34,9 +33,9 @@ app.get('/keys', (req, res) => {
     res.json({ privateKey, publicCrt });
 });
 
-app.post('/keys/new', async (req, res) => {
+app.get('/keys/new', async (req, res) => {
     const { privateKey, publicCrt } = await encryptor.createNewKeys();
-    res.json({ privateKey, publicCrt });
+    res.json({ success: true, keys: { privateKey, publicCrt } });
 });
 
 

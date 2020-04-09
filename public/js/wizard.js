@@ -1,63 +1,15 @@
+let changingStorefront;
+
 window.addEventListener('DOMContentLoaded', () => {
     const storefronts = document.getElementById('storefronts');
     const keysForm = document.getElementById('keys-form');
-    const popupFormStorefront = document.getElementById('popupFormStorefront');
     
-
-    /* When page loads make sure we create the Options available for the current storefront */
-    if (localStorage.getItem('storefrontToUse')) {
-        $('#storefrontId').val(localStorage.getItem('storefrontToUse'));
-    }
-    if (localStorage.getItem('accessKeyToUse')) {
-        $('#accessKey').val(localStorage.getItem('accessKeyToUse'));
-    }
-
-    function addStorefront(storefront) {
-        let storename = storefront;
-        // Prettify storefront names for user
-        if (storefront === 'fastspringexamplesii.test.onfastspring.com/popup-fastspringexamplesii') {
-            storename = 'Example popup storefront';
-        } else if (storefront === 'fastspringexamplesii.test.onfastspring.com') {
-            storename = 'Example web storefront';
-        }
-        const option = $(`
-            <div class="form-check">
-               <input class="form-check-input" type="radio" name="radio-storefront" value="${storefront}">
-               <label class="form-check-label" for="exampleRadios1">
-                   ${storename}
-               </label>
-           </div>
-        `);
-        $('#storefronts').append(option);
-    }
-
-    config.storefronts.forEach(function(storefront) {
-        addStorefront(storefront);
+    $('#updateStorefront').on('shown.bs.modal', function () {
+        console.log('eee!');
+        changingStorefront = true;
     });
 
-    var currentStorefront = sessionStorage.getItem('FSsecure-storefrontToUse');
-    if (currentStorefront && (config.storefronts.indexOf(currentStorefront) == -1)) {
-        addStorefront(currentStorefront);
-    }
-
-    for (var i = 0; i < storefronts.elements.length; i++) {
-        const val = storefronts.elements[i].value
-        if (storefronts.elements[i].value === storefrontToUse) {
-            storefronts.elements[i].checked = true;
-        }
-    }
-
-    // Reload page with new storefront
-    storefronts.addEventListener('change', function (event) {
-        window.localStorage.setItem('storefrontToUse', event.target.value);
-        window.location.reload();
-    }, false);
-
-
-    // Display steps if new storefront is chosen
-    if (currentStorefront) {
-        $('#createKeysModal').modal('show');
-    }
+    $('#updateStorefront').modal('show');
 
     const createKeysBtn = document.getElementById('createKeysBtn');
 
@@ -121,34 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
         displayStep('initial');
         createKeysBtn.setAttribute('initial');
     }
-
-
-    // Render JSON editor
-    const container = document.getElementById("jsoneditor")
-    const options = {
-        mode: 'code',
-        onError: function (err) {
-            alert(err.toString())
-        },
-        onModeChange: function (newMode, oldMode) {
-            console.log('Mode switched from', oldMode, 'to', newMode)
-        }
-    };
-    
-    JsonEditor = new JSONEditor(container, options);
-    const initialPayload = {
-        "contact": {
-            "email":"myName@email.com",
-            "firstName":"John",
-            "lastName":"Doe"
-        }
-    };
-    renderJSONEditor(initialPayload);
 });
-
-function renderJSONEditor(payload) {
-    JsonEditor.set(payload);
-}
 
 
 function getNewKeys() {
@@ -167,6 +92,7 @@ function getNewKeys() {
  *  Update localstorage and reload page so that the new storefront takes over.
  */
 function setCustomStorefront() {
+    const popupFormStorefront = document.getElementById('popupFormStorefront');
     if (popupFormStorefront.checkValidity()) {
         const storeFrontToUse = popupFormStorefront.storefrontId.value;
         const regex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(\/[a-z0-9-]*)?$/;
@@ -174,13 +100,26 @@ function setCustomStorefront() {
             $('#error-storefrontId').removeClass('hidden');
             return false;
         }
-        $('#updateStorefront').modal('hide');
-        window.sessionStorage.setItem('FSsecure-storefrontToUse', storeFrontToUse.replace(/^https?:\/\//, ''));
-        window.sessionStorage.setItem('FSsecure-accessKeyToUse', popupFormStorefront.accessKey.value);
-        window.location.reload();
+
+        const element = document.getElementById('fsc-api');
+        if (element) {
+            element.parentNode.removeChild(element);
+            delete document.fastspring;
+        }
+
+        const script = document.createElement('script');
+        script.onload = function () {
+            console.log('storefront loaded');
+        };
+        script.id = 'fsc-api';
+        script.setAttribute('data-storefront', storeFrontToUse);
+        script.setAttribute('data-error-callback', 'dataErrorCallback2');
+        script.setAttribute('data-data-callback', 'dataCallback');
+        script.src = 'https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js';
+        document.head.appendChild(script);
         return false;
     }
-};
+}
 
 
 /*
@@ -217,4 +156,8 @@ $('form input').keydown(function(event) {
         event.preventDefault();
         return false;
     }
+});
+
+$("form").on('submit',function(e){
+    e.preventDefault();
 });

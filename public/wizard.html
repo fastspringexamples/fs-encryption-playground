@@ -2,8 +2,7 @@
     <head>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link href="/styles/jsoneditor.min.css" rel="stylesheet" type="text/css">
-        <link href="/styles/custom.css" rel="stylesheet" type="text/css">
-        <script src="/js/jsoneditor.min.js"></script>
+    <script src="/js/jsoneditor.min.js"></script>
         <script
           src="https://code.jquery.com/jquery-3.4.1.min.js"
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -11,62 +10,22 @@
       </script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="js/secure.js"></script>
+        <script src="js/wizard.js"></script>
         <script>
-
-        /*
-            Default 
-        */
-		const config =  {
-			storefronts: [
-                "fastspringexamplesii.test.onfastspring.com/popup-fastspringexamplesii",
-				"fastspringexamplesii.test.onfastspring.com"
-			],
-			accessKey: "K2HOU37OQS6HQGRD5I2ZEG"
-		};
-
-        /*
-            When page is loaded check localStorage to determine whether we are using the 
-            default fastspringexamples storefronts or a custom one from the user
-        */
-
-		const storefrontToUse = sessionStorage.getItem('FSsecure-storefrontToUse') || config.storefronts[0];
-        let accessKeyToUse = config['accessKey'];
-        if (config.storefronts.indexOf(storefrontToUse) < 0 && sessionStorage.getItem('FSsecure-accessKeyToUse')) {
-            accessKeyToUse = sessionStorage.getItem('FSsecure-accessKeyToUse');
-        }
-        
-        document.write(
-            '<scr' + 'ipt ' + `
-                id="fsc-api"
-                src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js" type="text/javascript"
-                data-storefront=${storefrontToUse}
-                data-markup-helpers-callback="markupHelpersCallback"
-                data-before-requests-callback="beforeRequestsCallback"
-                data-after-requests-callback="afterRequestsCallback"
-                data-after-markup-callback="afterMarkupCallback"
-                data-popup-closed="popupClosed"
-                data-decorate-callback="decorateCallback"
-                data-error-callback="errorCallback"
-                data-data-callback="dataCallback"
-                data-access-key=${accessKeyToUse}
-              > ` + 
-            '<\/scr' + 'ipt>'
-        );
 
 	</script>
     </head>
     <body>
         <div class="container">
-            <header class="blog-header py-3">
-                <div class="row justify-content-center">
-                    <div class="col offset-md-4">
-                        <a href="https://fastspring.com" target="_blank" style="color: transparent;">
-                            <img src="images/fastspring-logo.png" alt="homepage" class="fs-logo">
-                        </a>
-                    </div>
-                </div>
-            </header>
+            <div class="row">
+                <button type="button" class="btn btn-success"> 
+                    <a href="#" data-toggle="modal" data-target="#updateStorefront" style="color:white"> Change storefront in use </a>
+                </button>
+            </div>
+            <br>
+            <br>
+
+
 
 <!-- Update Storefront Modal -->
     <div class="modal fade" id="updateStorefront" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
@@ -80,23 +39,6 @@
                </div>
                <div class="modal-body">
                    <div class="accordion" id="store-accordion">
-                       <div class="card">
-                           <div class="card-header" id="headingOne">
-                               <h2 class="mb-0">
-                                   <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                       Select available storefronts
-                                   </button>
-                               </h2>
-                           </div>
-                                
-                           <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#store-accordion">
-                               <div class="card-body">
-                                   <form name="storefronts" id="storefronts">
-                                        <!-- Radio inputs will be generated automatically -->
-                                   </form>
-                               </div>
-                           </div>
-                       </div>
                        <div class="card">
                            <div class="card-header" id="headingTwo">
                                <h2 class="mb-0">
@@ -126,23 +68,56 @@
                            </div>
                        </div>
                    </div>
-               </div>
+                </div>
+                <div class="modal-footer">
+                    <button disabled type="button" class="btn btn-primary" data-step="initial" id="goToKeysForm"> Next </button>
+                </div>
             </div>
          </div>
    </div>
 
+
+
+
+
+
+
+
+
             <div class="row">
                 <div class="col-6">
                     <div id='raw-code'>
-                        <div class="row">
-                            <div id="jsoneditor" class="col-12" style="height: 400px"></div>
+                        <form id="formRawPayload" name="formRawPayload" onsubmit="return false;" class="needs-validation" novalidate="">
+                            <div class="form-row">
+                                <h5> Raw payload </h5>
+                                <div id="jsoneditor" style="width: 400px; height: 400px;"></div>
+                <button onclick="createJSON()"> click </button>
+                <!--
+                                <textarea class="form-control" name="payload" rows="13">
+{
+    "contact": {
+        "email": "myName@email.com",
+        "firstName": "John",
+        "lastName": "Doe"
+    },
+    "items": [
+        {
+            "product": "phot-io-main-app",
+            "quantity": 1
+        }
+    ]   
+}
+                                </textarea>
+                -->
                             </div>
+                        </form>
                         <button type="button" class="btn btn-primary" onclick="encryptPayload()">
                             Encrypt Payload
                         </button>
 
                     </div>
                     <br/>
+                    <h5> Encrypted payload </h5>
                     <div class="card card-body" style="background-color: #8080800d;">
                         <pre>
                             <code id="encrypted-code">
@@ -154,31 +129,41 @@
                         </button>
                 </div>
                 <div class="col-6">
+                    <button type="button" class="btn btn-primary" onclick="createKeys2()">
+                        Create new keys
+                    </button>
+
                     <div id='keys-container'>
+                        <div id="accordion"
                         <div class="card">
                             <div class="card-header" id="headingOne">
-                                <b> Welcome to the Encryption Playground </b>
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        Private Key
+                                    </button>
+                                </h5>
                             </div>
-                            <div class="card-body">
-                                <p>
-                
-                                    The aim of this tool is to interactively learn how to create custom sessions using the secure method of the Store Builder Library.
-                                </p>
-                                <h5> How does it work? </h5>
-                                <p>
-                                    Use the JSON editor at the left to create your custom payload.
-                                    If the payload is sintactically valid it will be sent to the backend for encryption
-                                </p>
-                                <h5> Testing with your own storefront  </h5>
-                                    <p>
-                                    This tool provides a Wizard that will walk you through the steps you need to implement encrypted payloads on your website.
-                                    </p>
-                                <button type="button" class="btn btn-success"> 
-                                    <a href="/wizard.html" style="color:white">
-                                        Take me to the Wizard 
-                                    </a>
-                                </button>
+
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body privateKey" id='privateKey'>
+                                  
+                                </div>
                             </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Public Certificate
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body publicKey" id='publicKey'>
+                                    
+                                </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -204,6 +189,7 @@
                                 the custom buyer's shopping cart. FastSpring instantly decrypts this payload upon receipt and applies the decrypted data to the current session.
                                 This is why, as a first step, you need to define this keys pair. Please select one of the below option:
                                 </p>
+
                                 <form name="keys-form" id="keys-form">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio-keys" value="new-keys-result">
@@ -226,8 +212,8 @@
                                     </textarea>
                                 </form>
                             </div>
-                            <div id="new-keys-result-container" style="display:none;text-align: center;">
-                                <p> Great! Please now proceed to securely store the private key in your system and upload the public certificate to your dashboard. </p>
+                            <div id="new-keys-result-container">
+                                <p> Please now proceed to securely store the private key in your system and upload the public certificate to your dashboard. </p>
                                 
                                 <p> Once you have done, the next step is to create the payload representing the custom buyer's session. Click on the "Next" button when ready.</p>
                             
@@ -296,19 +282,54 @@
 
 
     <script>
-        // create the editor
-        
-        let FSGlobal = {};
-        let JsonEditor = {};
-        function dataCallback(data) {
-            FSGlobal = data;
-            
-            const productPath = data.groups[0].items[0].path;
+
+        function dataCallback() {
+            if (changingStorefront) {
+                $('#goToKeysForm').removeAttr("disabled");
+                $('#updateStorefront').modal('hide');
+                $('#createKeysModal').modal('show');
+            }
         }
 
-        </script>
+        function dataErrorCallback2(code, string) {
+            if (code === 0) {
+                alert('Incorrect storefront'); 
+            }
+        }
+        
+        // create the editor
+        
+        function createJSON() {
+
+        const container = document.getElementById("jsoneditor")
+        const options = {
+            mode: 'code',
+            onError: function (err) {
+                alert(err.toString())
+            },
+            onModeChange: function (newMode, oldMode) {
+                console.log('Mode switched from', oldMode, 'to', newMode)
+            }
+        };
+        const editor = new JSONEditor(container, options)
+
+        // set json
+        const initialJson = {
+            "Array": [1, 2, 3],
+            "Boolean": true,
+            "Null": null,
+            "Number": 123,
+            "Object": {"a": "b", "c": "d"},
+            "String": "Hello World"
+        }
+        editor.set(initialJson)
+        console.log(editor);
+        }
+            </script>
     
         <script>
+            
+
             function createKeys2() {
                 $('#createKeysModal').modal('show');
             }
@@ -331,8 +352,7 @@
             }
 
             function encryptPayload() {
-                const rawPayload = JsonEditor.get();
-                console.log(rawPayload);
+                const rawPayload = document.getElementById('formRawPayload').payload.value;
                 // First check that it's a valid payload
                 const isValidJSON = (payload) => {
                     try {
