@@ -296,14 +296,21 @@
 
 
     <script>
-        // create the editor
         
+        /* 
+        *  GLOBAL VARIABLES
+        */
         let FSGlobal = {};
         let JsonEditor = {};
+        let storefrontInitialLoad = true;
+        
         function dataCallback(data) {
             FSGlobal = data;
-            
-            const productPath = data.groups[0].items[0].path;
+            // If this is the first time the selected storefront is loaded
+            // pre-populate the JSON editor with a valid payload
+            if (storefrontInitialLoad) {
+                prepopulateInitialPayload(data);
+            }
         }
 
         </script>
@@ -313,9 +320,7 @@
                 $.post(`${window.location.origin}/keys/new`)
                     .done((resKey) => {
                         if (resKey) {
-                            console.log('REES', resKey);
                             $('#privateKey').html(`<pre>${resKey.privateKey}</pre>`);
-                            console.log($('#privateKey').html());
                             $('#publicKey').html(`<pre>${resKey.publicCrt}</pre>`);
                             $('#publicKey-modal').html(resKey.publicCrt);
                             $('#publicCrtModal').modal('show');
@@ -343,7 +348,6 @@
                 // TODO add validation
 
                 // Create AJAX request to our backend
-                    
                 const Http = new XMLHttpRequest();
                     const url= `${window.location.origin}/encrypt`;
                     Http.open('POST', url, true);

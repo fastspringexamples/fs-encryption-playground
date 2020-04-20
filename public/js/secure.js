@@ -105,7 +105,6 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     function displayStep(currentStep) {
-        console.log('EE', currentStep);
         const steps = ['initial', 'existing-keys', 'new-keys-result'];
         steps.forEach((step) => {
             const stepContainer = $(`#${step}-container`);
@@ -140,30 +139,50 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    JsonEditor = new JSONEditor(container, options);
-    const initialPayload = {
-        'contact': {
-            'email':'myName@email.com',
-            'firstName':'John',
-            'lastName':'Doe'
-        },
-        'items': 
-        [
-            {
-                'product': 'phot-io-main-app',
-                'quantity': 1,
-                'pricing': {
-                    'price': {
-                        'USD': 19.00
-                    }
-                }
-            }
-        ]
-    };
-    renderJSONEditor(initialPayload);
+    JsonEditor = new JSONEditor(container, options); 
+    
     // Customize the JSON editor menu
     customizeJSONEditor();
 });
+
+
+// It populates the JSON editor with a valid JSON payload
+// based on the current storefront selected.
+// If there are any products available in the storefront it will add
+// the first one found in SBL to the payload.
+function prepopulateInitialPayload(data) {
+    let productPath;
+    for (var i = 0; i < data.groups.length; i++) {
+        for (var j = 0; j < data.groups[i].items.length; j++) {
+            productPath = data.groups[i].items[j].path;
+            break;
+        }
+    }
+    const initialPayload = {
+        contact: {
+            email: 'myName@email.com',
+            firstName: 'John',
+            lastName:'Doe'
+        }
+    };
+    if (productPath) {
+        initialPayload.items = [
+            {
+                product: productPath,
+                quantity: 1,
+                pricing: {
+                    price: {
+                        USD: 20.00
+                    }
+                }
+            }
+        ];
+    }
+    renderJSONEditor(initialPayload);
+    // Turn off variable to avoid executing this function in
+    // every data-data-callback
+    storefrontInitialLoad = false;
+}
 
 function customizeJSONEditor() {
     // Remove unneeded buttons
