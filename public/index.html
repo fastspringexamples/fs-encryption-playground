@@ -68,7 +68,61 @@
                 </div>
             </header>
 
-<!-- Update Storefront Modal -->
+            <div class="row">
+                <div class="col-6">
+                    <div id='raw-code'>
+                        <div class="row">
+                            <div id="jsoneditor" class="col-12" style="height: 400px"></div>
+                            </div>
+                        <button type="button" class="btn btn-primary" id='encryptButton' onclick="encryptPayload()">
+                            Encrypt Payload
+                        </button>
+
+                    </div>
+                    <br/>
+                    <div class="card card-body" style="background-color: #8080800d;">
+                        <pre>
+                            <code id="encrypted-code">
+                           </code>
+                           </pre>
+                       </div>
+                       <button type="button" class="btn btn-primary" onclick="secureCall()">
+                            Execute
+                        </button>
+                </div>
+                <div class="col-6">
+                    <div id='instructions-container'>
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <b> Welcome to the Encryption Playground </b>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                
+                                    The aim of this tool is to interactively learn how to create custom sessions using the secure method of the Store Builder Library.
+                                </p>
+                                <h5> How does it work? </h5>
+                                <p>
+                                    Use the JSON editor at the left to create your custom payload.
+                                    If the payload is sintactically valid it will be sent to the backend for encryption
+                                </p>
+                                <h5> Testing with your own storefront  </h5>
+                                    <p>
+                                    This tool provides a Wizard that will walk you through the steps you need to implement encrypted payloads on your website.
+                                    </p>
+                                <button type="button" class="btn btn-success"> 
+                                    <a href="/wizard.html" style="color:white">
+                                        Take me to the Wizard 
+                                    </a>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Storefront Modal -->
     <div class="modal fade" id="updateStorefront" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
          <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -131,60 +185,6 @@
          </div>
    </div>
 
-            <div class="row">
-                <div class="col-6">
-                    <div id='raw-code'>
-                        <div class="row">
-                            <div id="jsoneditor" class="col-12" style="height: 400px"></div>
-                            </div>
-                        <button type="button" class="btn btn-primary" onclick="encryptPayload()">
-                            Encrypt Payload
-                        </button>
-
-                    </div>
-                    <br/>
-                    <div class="card card-body" style="background-color: #8080800d;">
-                        <pre>
-                            <code id="encrypted-code">
-                           </code>
-                           </pre>
-                       </div>
-                       <button type="button" class="btn btn-primary" onclick="secureCall()">
-                            Execute
-                        </button>
-                </div>
-                <div class="col-6">
-                    <div id='keys-container'>
-                        <div class="card">
-                            <div class="card-header" id="headingOne">
-                                <b> Welcome to the Encryption Playground </b>
-                            </div>
-                            <div class="card-body">
-                                <p>
-                
-                                    The aim of this tool is to interactively learn how to create custom sessions using the secure method of the Store Builder Library.
-                                </p>
-                                <h5> How does it work? </h5>
-                                <p>
-                                    Use the JSON editor at the left to create your custom payload.
-                                    If the payload is sintactically valid it will be sent to the backend for encryption
-                                </p>
-                                <h5> Testing with your own storefront  </h5>
-                                    <p>
-                                    This tool provides a Wizard that will walk you through the steps you need to implement encrypted payloads on your website.
-                                    </p>
-                                <button type="button" class="btn btn-success"> 
-                                    <a href="/wizard.html" style="color:white">
-                                        Take me to the Wizard 
-                                    </a>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
 
         <div class="modal fade bd-example-modal-lg" id="createKeysModal" tabindex="-1" role="dialog" aria-labelledby="createKeysModal" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -309,16 +309,14 @@
         </script>
     
         <script>
-            function createKeys2() {
-                $('#createKeysModal').modal('show');
-            }
-
             function createKeys() {
                 $.post(`${window.location.origin}/keys/new`)
                     .done((resKey) => {
                         if (resKey) {
-                            $('#privateKey').html(`<pre> ${resKey.privateKey} </pre>`);
-                            $('#publicKey').html(`<pre> ${resKey.publicCrt} </pre>`);
+                            console.log('REES', resKey);
+                            $('#privateKey').html(`<pre>${resKey.privateKey}</pre>`);
+                            console.log($('#privateKey').html());
+                            $('#publicKey').html(`<pre>${resKey.publicCrt}</pre>`);
                             $('#publicKey-modal').html(resKey.publicCrt);
                             $('#publicCrtModal').modal('show');
                         } else {
@@ -331,8 +329,7 @@
             }
 
             function encryptPayload() {
-                const rawPayload = JsonEditor.get();
-                console.log(rawPayload);
+                const JSONPayload = JsonEditor.get();
                 // First check that it's a valid payload
                 const isValidJSON = (payload) => {
                     try {
@@ -343,11 +340,8 @@
                     }
                     return true;
                 };
-                alert(isValidJSON(rawPayload));
-                return;
+                // TODO add validation
 
-                const JSONpayload = JSON.parse(rawPayload);
-                console.log(JSONpayload);
                 // Create AJAX request to our backend
                     
                 const Http = new XMLHttpRequest();
@@ -367,7 +361,7 @@ fastspring.builder.secure(securePayload, secureKey);
 fastspring.builder.checkout();`);
 }
                     };
-                    Http.send(JSON.stringify(JSONpayload));
+                    Http.send(JSON.stringify(JSONPayload));
 /*
                 $.post(`${window.location.origin}/encrypt`, JSONpayload )
                     .done((resEncrypted) => {

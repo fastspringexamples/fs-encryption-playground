@@ -4,12 +4,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const storefronts = document.getElementById('storefronts');
     const keysForm = document.getElementById('keys-form');
     
-    $('#updateStorefront').on('shown.bs.modal', function () {
-        console.log('eee!');
+    $('#updateStorefrontModal').on('shown.bs.modal', function () {
         changingStorefront = true;
     });
 
-    $('#updateStorefront').modal('show');
+    $('#createKeysModal').on('shown.bs.modal', function () {
+        $('#keys-checked').prop('checked', true);
+    });
+
+    $('#updateStorefrontModal').modal('show');
 
     const createKeysBtn = document.getElementById('createKeysBtn');
 
@@ -73,16 +76,48 @@ window.addEventListener('DOMContentLoaded', () => {
         displayStep('initial');
         createKeysBtn.setAttribute('initial');
     }
+
+    // Render JSON editor
+    const container = document.getElementById("jsoneditor")
+    const options = {
+        mode: 'code',
+        onError: function (err) {
+            alert(err.toString())
+        },
+        navigationBar: false,
+        onModeChange: function (newMode, oldMode) {
+            console.log('Mode switched from', oldMode, 'to', newMode)
+        }
+    };
+    
+    JsonEditor = new JSONEditor(container, options);
+    const initialPayload = {
+        "contact": {
+            "email":"myName@email.com",
+            "firstName":"John",
+            "lastName":"Doe"
+        }
+    };
+    renderJSONEditor(initialPayload);
+    
+
+
 });
 
+function renderJSONEditor(payload) {
+    JsonEditor.set(payload);
+}
 
+
+/*
+ *  API
+ **/
 function getNewKeys() {
     $.get('/keys/new').done(function(resKey) {
-        console.log('HHH', resKey);
         if (resKey && resKey.success) {
             console.log('jejje');
-            $('.privateKey').html(`<pre> ${resKey.keys.privateKey} </pre>`);
-            $('.publicKey').html(`<pre> ${resKey.keys.publicCrt} </pre>`);
+            $('.privateKey').html(`<pre>${resKey.keys.privateKey}</pre>`);
+            $('.publicKey').html(`<pre>${resKey.keys.publicCrt}</pre>`);
         }
     });
 }
@@ -95,6 +130,7 @@ function setCustomStorefront() {
     const popupFormStorefront = document.getElementById('popupFormStorefront');
     if (popupFormStorefront.checkValidity()) {
         const storeFrontToUse = popupFormStorefront.storefrontId.value;
+        const accessKeyToUse = popupFormStorefront.accessKey.value;
         const regex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(\/[a-z0-9-]*)?$/;
         if (!regex.test(storeFrontToUse)) {
             $('#error-storefrontId').removeClass('hidden');
@@ -113,14 +149,81 @@ function setCustomStorefront() {
         };
         script.id = 'fsc-api';
         script.setAttribute('data-storefront', storeFrontToUse);
-        script.setAttribute('data-error-callback', 'dataErrorCallback2');
+        script.setAttribute('data-access-key', accessKeyToUse);
+        script.setAttribute('data-error-callback', 'dataErrorCallback');
         script.setAttribute('data-data-callback', 'dataCallback');
+        script.setAttribute('data-popup-closed', 'dataPopupClosed');
         script.src = 'https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js';
         document.head.appendChild(script);
         return false;
     }
 }
 
+function encryptPayload() {
+    const JSONPayload = JsonEditor.get();
+    // First check that it's a valid payload
+    const isValidJSON = (payload) => {
+        try {
+            JSON.parse(rawPayload);
+        } catch (e) {
+            console.log(e.message, e.name);
+            return false;
+        }
+        return true;
+    };
+    // TODO add validation
+
+    // Create AJAX request to our backend
+    JSONPayload.customKey = $('.privateKey > pre').html();
+    const Http = new XMLHttpRequest();
+    const url= `${window.location.origin}/encrypt`;
+    Http.open('POST', url, true);
+    Http.setRequestHeader("Content-Type", "application/json");
+
+    Http.onreadystatechange = function(){
+        if (this.readyState === 4 && this.status === 200) {
+            const resEncrypted = JSON.parse(this.responseText);
+
+                        $('#encrypted-code').html(`
+const securePayload = "${resEncrypted.securePayload}";
+const secureKey = "${resEncrypted.secureKey}";
+
+fastspring.builder.secure(securePayload, secureKey);
+fastspring.builder.checkout();`);
+}
+                    };
+                    Http.send(JSON.stringify(JSONPayload));
+}
+
+
+function secureCall() {
+    eval($("#encrypted-code").html());
+}
+
+/*
+ *
+ * SBL callbacks
+*/
+function dataCallback() {
+    if (changingStorefront) {
+        $('#goToKeysForm').removeAttr("disabled");
+        $('#storefront-checked').prop("checked", true);
+        $('#updateStorefrontModal').modal('hide');
+        $('#createKeysModal').modal('show');
+    }
+}
+
+function dataErrorCallback(code, string) {
+    if (code === 0) {
+        alert('Incorrect storefront');
+    } else if (code === 400 && string === "Invalid Payload") {
+        alert('Invalid payload');
+    }
+}
+
+function dataPopupClosed() {
+    $('#payload-checked').prop("checked", true);
+}
 
 /*
  * JQuery miscellaneous functions

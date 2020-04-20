@@ -20,7 +20,7 @@ const port = 9000;
 
 app.post('/encrypt', (req, res) => {
     console.log(util.inspect(req.body, false, null, true));
-    const payload = encryptor.encrypt(req.body);
+    const payload = encryptor.encrypt(req.body, req.body.customKey);
     console.log(payload);
     res.json(payload);
 });

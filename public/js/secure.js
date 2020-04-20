@@ -124,27 +124,73 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
     // Render JSON editor
-    const container = document.getElementById("jsoneditor")
+    const container = document.getElementById("jsoneditor");
     const options = {
         mode: 'code',
         onError: function (err) {
-            alert(err.toString())
+            alert(err.toString());
         },
-        onModeChange: function (newMode, oldMode) {
-            console.log('Mode switched from', oldMode, 'to', newMode)
+        onChange: function () {
+            const valid = checkPayloadValidity();
+            if (!valid) {
+                $('#encryptButton').attr("disabled", true);
+            } else {
+                $('#encryptButton').removeAttr("disabled");
+            }
         }
     };
     
     JsonEditor = new JSONEditor(container, options);
     const initialPayload = {
-        "contact": {
-            "email":"myName@email.com",
-            "firstName":"John",
-            "lastName":"Doe"
-        }
+        'contact': {
+            'email':'myName@email.com',
+            'firstName':'John',
+            'lastName':'Doe'
+        },
+        'items': 
+        [
+            {
+                'product': 'phot-io-main-app',
+                'quantity': 1,
+                'pricing': {
+                    'price': {
+                        'USD': 19.00
+                    }
+                }
+            }
+        ]
     };
     renderJSONEditor(initialPayload);
+    // Customize the JSON editor menu
+    customizeJSONEditor();
 });
+
+function customizeJSONEditor() {
+    // Remove unneeded buttons
+    $('.jsoneditor-repair').remove();
+    $('.jsoneditor-transform').remove();
+    $('.jsoneditor-sort').remove();
+
+    // Swap children and push them to the right
+    const editorElement = $('.jsoneditor-menu');
+    const children = editorElement.children();
+    children.sort((() => -1 ));
+    $('.jsoneditor-menu').empty();
+    children.appendTo(editorElement);
+    // Insert title
+    const editorTitle = '<p class="editor-title"> Custom JSON Payload </p>';
+    editorElement.prepend(editorTitle);
+}
+
+function checkPayloadValidity() {
+    let isValid = true;
+    try {
+        JsonEditor.get();
+    } catch(e) {
+        isValid = false;
+    }
+    return isValid;
+}
 
 function renderJSONEditor(payload) {
     JsonEditor.set(payload);
@@ -153,9 +199,7 @@ function renderJSONEditor(payload) {
 
 function getNewKeys() {
     $.get('/keys/new').done(function(resKey) {
-        console.log('HHH', resKey);
         if (resKey && resKey.success) {
-            console.log('jejje');
             $('.privateKey').html(`<pre> ${resKey.keys.privateKey} </pre>`);
             $('.publicKey').html(`<pre> ${resKey.keys.publicCrt} </pre>`);
         }

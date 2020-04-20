@@ -7,3 +7,13 @@ a.jsoneditor-poweredBy {
     border-bottom: 1px solid #e5e5e5;
     margin-bottom: 40px;
 }
+
+.jsoneditor-menu > button {
+    float: right;
+}
+
+.editor-title {
+    float: left;
+    padding-top: 6px;
+    padding-left: 7px;
+}
