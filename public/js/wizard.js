@@ -44,9 +44,6 @@ window.addEventListener('DOMContentLoaded', () => {
             case 'existing-keys':
                 nextStep = 'keys-form';
                 break;
-                /*case 'new-keys-form':
-                nextStep = 'new-keys-result';
-                break;*/
             case 'new-keys-result':
                 $('#createKeysModal').modal('hide');
                 break;
@@ -60,7 +57,6 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     function displayStep(currentStep) {
-        console.log('EE', currentStep);
         const steps = ['initial', 'existing-keys', 'new-keys-result'];
         steps.forEach((step) => {
             const stepContainer = $(`#${step}-container`);
@@ -76,6 +72,14 @@ window.addEventListener('DOMContentLoaded', () => {
         displayStep('initial');
         createKeysBtn.setAttribute('initial');
     }
+    function openKeysModal() {
+        $("#createKeysModal").modal("show");
+    }
+
+    function openStorefrontModal() {
+        $("#updateStorefrontModal").modal("show");
+    }
+
 
     // Render JSON editor
     const container = document.getElementById("jsoneditor")

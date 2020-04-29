@@ -17,3 +17,22 @@ a.jsoneditor-poweredBy {
     padding-top: 6px;
     padding-left: 7px;
 }
+
+#popupFormStorefront {
+    width: 50%;
+    margin: auto;
+}
+
+.keys-warning {
+    padding: 8px;
+    border: 2px solid red;
+}
+
+#resetWizard {
+    color: #007bff;
+    cursor: pointer;
+}
+
+#popupFormStorefront .modal-footer {
+    border-top: 0;
+}

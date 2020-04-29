@@ -1,5 +1,7 @@
 <html>
     <head>
+        <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.ico">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link href="/styles/jsoneditor.min.css" rel="stylesheet" type="text/css">
         <link href="/styles/custom.css" rel="stylesheet" type="text/css">
@@ -9,51 +11,10 @@
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
           crossorigin="anonymous">
       </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="js/secure.js"></script>
         <script>
-
-        /*
-            Default 
-        */
-		const config =  {
-			storefronts: [
-                "fastspringexamplesii.test.onfastspring.com/popup-fastspringexamplesii",
-				"fastspringexamplesii.test.onfastspring.com"
-			],
-			accessKey: "K2HOU37OQS6HQGRD5I2ZEG"
-		};
-
-        /*
-            When page is loaded check localStorage to determine whether we are using the 
-            default fastspringexamples storefronts or a custom one from the user
-        */
-
-		const storefrontToUse = sessionStorage.getItem('FSsecure-storefrontToUse') || config.storefronts[0];
-        let accessKeyToUse = config['accessKey'];
-        if (config.storefronts.indexOf(storefrontToUse) < 0 && sessionStorage.getItem('FSsecure-accessKeyToUse')) {
-            accessKeyToUse = sessionStorage.getItem('FSsecure-accessKeyToUse');
-        }
-        
-        document.write(
-            '<scr' + 'ipt ' + `
-                id="fsc-api"
-                src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js" type="text/javascript"
-                data-storefront=${storefrontToUse}
-                data-markup-helpers-callback="markupHelpersCallback"
-                data-before-requests-callback="beforeRequestsCallback"
-                data-after-requests-callback="afterRequestsCallback"
-                data-after-markup-callback="afterMarkupCallback"
-                data-popup-closed="popupClosed"
-                data-decorate-callback="decorateCallback"
-                data-error-callback="errorCallback"
-                data-data-callback="dataCallback"
-                data-access-key=${accessKeyToUse}
-              > ` + 
-            '<\/scr' + 'ipt>'
-        );
-
 	</script>
     </head>
     <body>
@@ -103,16 +64,83 @@
                                 </p>
                                 <h5> How does it work? </h5>
                                 <p>
-                                    Use the JSON editor at the left to create your custom payload.
-                                    If the payload is sintactically valid it will be sent to the backend for encryption
+                                    Use the JSON editor to the left to create your custom payload.
+                                    If the payload is sintactically valid it will be sent to the backend for encryption. Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the custom session.
                                 </p>
                                 <h5> Testing with your own storefront  </h5>
                                     <p>
-                                    This tool provides a Wizard that will walk you through the steps you need to implement encrypted payloads on your website.
+                                    Right now you are interacting with an example storefront.
+                                    This tool provides you with a Wizard that will walk you through the steps you need to implement in order to
+                                    add custom encrypted payloads using the storefront of your choice.
                                     </p>
-                                <button type="button" class="btn btn-success"> 
-                                    <a href="/wizard.html" style="color:white">
-                                        Take me to the Wizard 
+                                <button type="button" id='startWizard' class="btn btn-success"> 
+                                    Take me to the Wizard 
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='wizard-checklist-container' style="display:none">
+                        <div class="card">
+                            <div class="card-header" id="headingOne" style="display:flex; justify-content: space-between;">
+                                <b> Encryption Playground - Wizard  </b>
+                                
+                                    <span id='resetWizard'>
+                                        Reset
+                                    </span>
+                                
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input disabled id="storefront-checked" type="checkbox">
+                                            </input>
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control" disabled value="Choose custom storefront">
+                                    <span class="input-group-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Check Step">
+                                        <button class="btn" type="button" onclick="openStorefrontModal()">
+                                            <span class="material-icons">
+                                                remove_red_eye
+                                            </span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input disabled id="keys-checked" type="checkbox">
+                                            </input>
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control" disabled value="Set encryption keys">
+                                    <span class="input-group-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Check Step">
+                                        <button class="btn" type="button" onclick="openKeysModal()">
+                                            <span class="material-icons">
+                                                remove_red_eye
+                                            </span>
+                                        </button>
+                                    </span>
+                                </div>
+                                    <p>
+                                        After you have chosen your storefront and defined the encryption keys you can start testing custom sessions
+                                        using the JSON editor at the left side.
+                                    </p>
+                                    <p>
+                                        Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the custom session.                                    </p>
+                                    <p>
+                                        Once you have finished creating your session, click on the Encrypt Payload button. The Encryption Wizard will send the raw JSON payload to the backend along with the previously defined private key to encrypt the data.
+                                    </p>
+                                    <p>
+                                    If the encryption was succesful, you will see the result underneath:
+                                    SBL will pass the encrypted payload and the secure key to the <a href="https://fastspringexamples.com/method/fastspring-builder-securesecurepayload-securekey/" target="_blank"> secure method </a> to upload the current session.
+                                    Lastly, it will execute the <a href="https://fastspringexamples.com/method/fastspring-builder-checkout/" target="_blank"> checkout method </a> to trigger the storefront checkout.
+                                    </p>
+
+                                <button type="button" class="btn btn-success">
+                                    
+                                    <a href="/index.html" style="color:white">
+                                        Close wizard 
                                     </a>
                                 </button>
                             </div>
@@ -123,69 +151,50 @@
         </div>
 
         <!-- Update Storefront Modal -->
-    <div class="modal fade" id="updateStorefront" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Change storefront</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-               </div>
-               <div class="modal-body">
-                   <div class="accordion" id="store-accordion">
-                       <div class="card">
-                           <div class="card-header" id="headingOne">
-                               <h2 class="mb-0">
-                                   <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                       Select available storefronts
-                                   </button>
-                               </h2>
-                           </div>
-                                
-                           <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#store-accordion">
-                               <div class="card-body">
-                                   <form name="storefronts" id="storefronts">
-                                        <!-- Radio inputs will be generated automatically -->
-                                   </form>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="card">
-                           <div class="card-header" id="headingTwo">
-                               <h2 class="mb-0">
-                                   <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                       Add custom storefront
-                                   </button>
-                               </h2>
-                           </div>
-                           <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#store-accordion">
-                               <div class="card-body">
-                                   <form id="popupFormStorefront" name="popupFormStorefront" onsubmit="setCustomStorefront(); return false;" class="needs-validation" novalidate>
-                                       <div class="form-group">
-                                           <label for="storefrontId" class="col-form-label">Storefront Id:</label>
-                                           <input type="text" class="form-control" id="storefrontId" name="storefrontId" required="required"
-                                                                                                                         pattern="^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(\/[a-z0-9-]*)?$"
-                                                                                                                         title="....test.onfastspring.com...">
-                                           <div class="invalid-feedback"> Please insert a valid storefrontId</div>
-                                       </div>
-                                       <div class="form-group">
-                                           <label for="accessKey" class="col-form-label"> Access Key:</label>
-                                           <input class="form-control" type="text" id="accessKey" name="accessKey" pattern=".{22,}" required="required">
-                                           <div class="invalid-feedback"> Please insert a valid 22 characters access key</div>
-                                       </div>
-                                       <button type="submit" class="btn btn-primary" id="addStorefrontBtn"> Add </button>
-                                   </form>
-                               </div>
-                           </div>
-                       </div>
+        <div class="modal fade" id="updateStorefrontModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+             <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                   <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Select your storefront</h4>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
                    </div>
-               </div>
-            </div>
-         </div>
-   </div>
+                   <div class="modal-body">
+                       <p> As a first step, you need to point the <a href="https://fastspring.com/docs/store-builder-library/" target="_blank"> Store Builder Library (SBL) </a> to your storefront so that it can load your checkout configuration as well
+                       as the product information defined in it. You do so by providing your <b> Storefront Id </b> (also known as Storefront URL) which you can obtain following <a href="https://fastspring.com/docs/linking-to-your-storefronts" target="_blank"> this article</a>. For popup storefronts, you will use the  <b> data-storefront </b> attribute accessible under the "PLACE ON
+                       YOUR WEBSITE" setting of your storefront.
+                       </p>
 
+                       <p>
+                       SBL will use the <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> secure method </a> to create custom sessions. In order for the the secure method to function correctly you will need to provide SBL with the <b> data-access-key</b>. This key will be used along with the public certificate and the private key to ensure the secure communication of data between SBL and the FastSpring server. You can find this key under the Store Builder Library section of the of the
+                           <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> Integrations menu. </a>
+                       </p>
+                       <form id="popupFormStorefront" name="popupFormStorefront" onsubmit="setCustomStorefront(); return false;" class="needs-validation" novalidate>
+                           <div class="form-group">
+                               <label for="storefrontId" class="col-form-label">Storefront Id:</label>
+                               <input type="text" class="form-control" id="storefrontId" name="storefrontId" required="required"
+                                                                                                             pattern="^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(\/[a-z0-9-]*)?$"
+                                                                                                             title="....test.onfastspring.com...">
+                               <div class="invalid-feedback" id='incorrect-storefront'> Please insert a valid storefrontId</div>
+                           </div>
+                           <div class="form-group">
+                               <label for="accessKey" class="col-form-label"> Access Key:</label>
+                               <input class="form-control" type="text" id="accessKey" name="accessKey" pattern=".{22,}" required="required">
+                               <div class="invalid-feedback"> Please insert a valid 22 characters access key</div>
+                           </div>
+                           <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="addStorefrontBtn"> Save </button>
+                    </div>
+                           
+                       </form>
+                    </div>
+                    
+                </div>
+             </div>
+        </div>
 
+        <!-- Create keys modal -->
         <div class="modal fade bd-example-modal-lg" id="createKeysModal" tabindex="-1" role="dialog" aria-labelledby="createKeysModal" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -198,46 +207,62 @@
                     <div id="charge-form-wrapper">
                         <div class="modal-body" >
                             <div id="initial-container">
-                                <p> Thanks for selecting your storefront.</p>
                                 <p>
                                 The process of passing data securely through SBL requires a pair of private and public keys which will be used to encrypt the payload containing
                                 the custom buyer's shopping cart. FastSpring instantly decrypts this payload upon receipt and applies the decrypted data to the current session.
-                                This is why, as a first step, you need to define this keys pair. Please select one of the below option:
+                                Please select one of the below option:
                                 </p>
+
                                 <form name="keys-form" id="keys-form">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio-keys" value="new-keys-result">
                                         <label class="form-check-label" for="exampleRadios1">
-                                            I need to create new keys
+                                            I haven't created the private keys and the public certificate yet.
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="radio-keys" value="existing-keys">
                                         <label class="form-check-label" for="exampleRadios1">
-                                            I already have a private key and a public cert uploaded in my dashboard
+                                            I already have a test private key and a public cert uploaded in my dashboard.
                                         </label>
                                     </div>
                                 </form>
                             </div>
                             <div id="existing-keys-container" style="display:none">
-                                Please paste your key here:
-                                <form name="custom-key-form" id="keys-form">
-                                    <textarea class="form-control" name="custom-privateKey" rows="13">
-                                    </textarea>
+                                <p class='keys-warning'>
+                                    You should NOT share your production key with anyone.
+                                    Instead, use this tool to test custom payloads with your testing private keys. You can restart the Encryption Wizard to generate a new pair of keys if you need.
+                                </p> 
+                                <p>
+                                    Make sure to have previously uploaded a public certificate file to the FastSpring dashboard under the Store Builder Library section of the <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> Integrations menu</a> (remember to click the Save button once you have uploaded the file)
+
+                                </p>
+                                
+                                <p> Please proceed to paste your test private key in the following field and click next. </p>
+                                <form id="custom-key-form">
+                                    <textarea class="form-control" name="custom-privateKey" rows="7"></textarea>
                                 </form>
                             </div>
-                            <div id="new-keys-result-container" style="display:none;text-align: center;">
-                                <p> Great! Please now proceed to securely store the private key in your system and upload the public certificate to your dashboard. </p>
+                            <div id="new-keys-result-container" style="display:none">
+                                <p> A pair of public and private keys have been created for you at the bottom of this modal using
+                                <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> OpenSSL<a/>, as described in
+                                <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>.</p>
                                 
-                                <p> Once you have done, the next step is to create the payload representing the custom buyer's session. Click on the "Next" button when ready.</p>
-                            
-                                <div id="accordion"
+                                <p> You will need to create two files containing the keys. Use the code editor of your choice and copy the content of each key using the copy-clip-board icon. Save the files as <b> private.pem </b> and <b>  public.crt </b>
+                                </p>
+
+                                <div id="accordion">
                                     <div class="card">
                                         <div class="card-header" id="headingOne">
                                             <h5 class="mb-0">
                                                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOneNew" aria-expanded="true" aria-controls="collapseOneNew">
                                                     Private Key
                                                 </button>
+                                                <span class="input-group-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy to clipboard">
+                                                    <button class="btn" type="button" onclick="copyToClipboard('privateKey');">
+                                                        <img class="clippy" src="/images/clippy.svg" width="13" alt="Copy to clipboard">
+                                                    </button>
+                                                </span>
                                             </h5>
                                         </div>
 
@@ -252,6 +277,11 @@
                                                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwoNew" aria-expanded="false" aria-controls="collapseTwoNew">
                                                     Public Certificate
                                                 </button>
+                                                <span class="input-group-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy to clipboard">
+                                                    <button class="btn" type="button" onclick="copyToClipboard('publicKey');">
+                                                        <img class="clippy" src="/images/clippy.svg" width="13" alt="Copy to clipboard">
+                                                    </button>
+                                                </span>
                                             </h5>
                                         </div>
                                         <div id="collapseTwoNew" class="collapse" aria-labelledby="headingTwoNew" data-parent="#accordion">
@@ -260,6 +290,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <br>
+                                <p> Once you have the two files saved in your system you will use them as follows:  </p>
+                                <ul>
+                                    <li>
+                                        <b> private.pem: </b> Always make sure to securely store
+                                            this key in your system and don't share it with others unless it's meant for testing purporses.
+                                            You will use the private key to do the payload encryption in your backend. You can check this <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a> for implementation examples in PHP, Java and NodeJS. For this tool, The Encryption Wizard will do encryption on your behalf using this key so that you can focus on testing payloads.
+                                    </li>
+                                    <li>
+                                        <b>  public.crt: </b> FastSpring will use the public certificate to verify that the encrypted payload comes from you. Make sure to upload the public certificate file to the FastSpring dashboard under the Store Builder Library section of the <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> Integrations menu. </a>. Remember to click the Save button once you have uploaded the file.
+                                    </li>
+                                    
+                                </ul>
+                                                            
                                 </div>
                         </div>
                         <div class="modal-footer">
@@ -270,125 +314,15 @@
             </div>
         </div>
 
-
-        <div class="modal fade bd-example-modal-lg" id="publicCrtModal" tabindex="-1" role="dialog" aria-labelledby="publicCrtModal" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel"> Upload your public certificate </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div id="charge-form-wrapper">
-                            <div class="modal-body" style="text-align: center;">
-                                <p> Great! Please now proceed to upload the public certificate to your dashboard. </p>
-                                <pre id="publicKey-modal"> </p>
-                                <p> Make sure to keep your private key stored secretly.. </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal"> Done! </button>
-                            </div>
-                        <div>
-                    </div>
-                </div>
-            </div>
-
-
-    <script>
-        
-        /* 
-        *  GLOBAL VARIABLES
-        */
-        let FSGlobal = {};
-        let JsonEditor = {};
-        let storefrontInitialLoad = true;
-        
-        function dataCallback(data) {
-            FSGlobal = data;
-            // If this is the first time the selected storefront is loaded
-            // pre-populate the JSON editor with a valid payload
-            if (storefrontInitialLoad) {
-                prepopulateInitialPayload(data);
-            }
-        }
-
-        </script>
-    
-        <script>
-            function createKeys() {
-                $.post(`${window.location.origin}/keys/new`)
-                    .done((resKey) => {
-                        if (resKey) {
-                            $('#privateKey').html(`<pre>${resKey.privateKey}</pre>`);
-                            $('#publicKey').html(`<pre>${resKey.publicCrt}</pre>`);
-                            $('#publicKey-modal').html(resKey.publicCrt);
-                            $('#publicCrtModal').modal('show');
-                        } else {
-                            console.log('eerr');
-                        }
-                    })
-                    .fail(() => {
-                        forceLogout('An unexpected server error occurred, please login again.');
-                    });
-            }
-
-            function encryptPayload() {
-                const JSONPayload = JsonEditor.get();
-                // First check that it's a valid payload
-                const isValidJSON = (payload) => {
-                    try {
-                        JSON.parse(rawPayload);
-                    } catch (e) {
-                        console.log(e.message, e.name);
-                        return false;
-                    }
-                    return true;
-                };
-                // TODO add validation
-
-                // Create AJAX request to our backend
-                const Http = new XMLHttpRequest();
-                    const url= `${window.location.origin}/encrypt`;
-                    Http.open('POST', url, true);
-                    Http.setRequestHeader("Content-Type", "application/json");
-                   
-                    Http.onreadystatechange = function(){
-                        if (this.readyState === 4 && this.status === 200) {
-                        const resEncrypted = JSON.parse(this.responseText);
-                        
-                        $('#encrypted-code').html(`
-const securePayload = "${resEncrypted.securePayload}";
-const secureKey = "${resEncrypted.secureKey}";
-
-fastspring.builder.secure(securePayload, secureKey);
-fastspring.builder.checkout();`);
-}
-                    };
-                    Http.send(JSON.stringify(JSONPayload));
-/*
-                $.post(`${window.location.origin}/encrypt`, JSONpayload )
-                    .done((resEncrypted) => {
-                        if (resEncrypted) {
-                        $('#encrypted-code').html(`
-const securePayload = "${resEncrypted.securePayload}";
-const secureKey = "${resEncrypted.secureKey}";
-
-fastspring.builder.secure(securePayload, secureKey);
-fastspring.builder.checkout();`);
-                        } else {
-                            console.log('eerr');
-                        }
-                    })
-                    .fail(() => {
-                        forceLogout('An unexpected server error occurred, please login again.');
-                    });
-                    */
-            }
-
-            function secureCall() {
-                eval($("#encrypted-code").html());
-            }
-        </script>
+    <script
+        id="fsc-api"
+        src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js"
+        type="text/javascript"
+        data-storefront="fastspringexamplesii.test.onfastspring.com/popup-fastspringexamplesii"
+        data-error-callback="errorCallback"
+        data-data-callback="dataCallback"
+        data-access-key="K2HOU37OQS6HQGRD5I2ZEG"
+    >
+    </script>
     </body>
 </html>
