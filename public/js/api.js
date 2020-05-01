@@ -38,9 +38,16 @@ function encryptPayload() {
     }
     const JSONPayload = JsonEditor.get();
 
+    // Make sure key exists when using Wizard
+    if (wizardOn) {
+        const customKey = $('.privateKey > pre').html();
+        if (!customKey) {
+            alert('Private key not found, please review key creation step');
+            return;
+        }
+        JSONPayload.customKey = customKey;
+    }
     // Create AJAX request to our backend
-    JSONPayload.customKey = $('.privateKey > pre').html();
-    // TODO make sure key exists when using Wizard
     const Http = new XMLHttpRequest();
     const url= `${window.location.origin}/encrypt`;
     Http.open('POST', url, true);

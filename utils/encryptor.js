@@ -40,7 +40,6 @@ function createNewKeys() {
 // TODO add error handling
 function encrypt(payload, customKey) {
     const privateKey = customKey || fs.readFileSync(path.join(__dirname, '../keys/privatekey.pem'), 'utf8');
-    console.log(privateKey);
     const aesKey = crypto.randomBytes(16);
     const iv = '';
     const cipher = crypto.createCipheriv('aes-128-ecb', aesKey, iv);

@@ -27,8 +27,9 @@ function dataErrorCallback(code, string) {
         deleteCurrentStorefront();
         $('#storefront-checked').prop("checked", false);
         storefrontInitialLoad = true;
-    } else if (code === 400 && string === "Invalid Payload") {
-        alert('Invalid payload');
+    } else if (code === 400) {
+        $('#payloadErrorModal').modal('show');
+        // TODO add string when availble && string === "Invalid Payload");
     }
 }
 

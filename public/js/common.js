@@ -4,6 +4,7 @@
 let JsonEditor = {};
 let storefrontInitialLoad = true;
 let changingStorefront = false;
+let wizardOn = false;
 
 function openKeysModal() {
     $("#createKeysModal").modal("show");
@@ -55,9 +56,10 @@ function resetKeyCreationSteps() {
 
 // Start wizard from beginning
 function startWizard() {
+    wizardOn = true;
     $('#instructions-container').hide();
     $('#wizard-checklist-container').show();
-    
+
     // Uncheck steps
     $('#storefront-checked').prop('checked', false);
     $('#keys-checked').prop('checked', false);
