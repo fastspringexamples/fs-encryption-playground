@@ -1,4 +1,9 @@
 /* 
+ *  Global variables and utils used by the rest of js modules to interact with the frontend
+ */
+
+
+/* 
  *  GLOBAL VARIABLES
  */
 let JsonEditor = {};
@@ -6,6 +11,9 @@ let storefrontInitialLoad = true;
 let changingStorefront = false;
 let wizardOn = false;
 
+/* 
+ *  Common utils
+ */
 function openKeysModal() {
     $("#createKeysModal").modal("show");
 }
@@ -14,6 +22,64 @@ function openStorefrontModal() {
     $("#updateStorefrontModal").modal("show");
 }
 
+function emptyExecutionCode() {
+    $("#encrypted-code").html('');
+}
+
+function secureCall() {
+    eval($("#encrypted-code").html());
+}
+
+/* 
+ *  WIZARD FUNCTIONS
+ */
+
+/*  keysModalStateMachine
+ *
+ *  This function controls the steps inside the key creation modal
+ */
+function keysModalStateMachine() {
+    const step = this.getAttribute('data-step');
+    let nextStep;
+    switch (step) {
+        case 'initial':
+            const radios = document.getElementsByName('radio-keys');
+            for (var i = 0, length = radios.length; i < length; i++) {
+                if (radios[i].checked) {
+                    nextStep = radios[i].value;
+                    // only one radio can be logically checked, don't check the rest
+                    break;
+                }
+            }
+            if (nextStep === 'new-keys-result') {
+                getNewKeys();
+            }
+            break;
+        case 'existing-keys':
+            // Check that key has been provided
+            nextStep = step;
+            if (setCustomPrivateKey()) {
+                $('#createKeysModal').modal('hide');
+            }
+            break;
+        case 'new-keys-result':
+            nextStep = step;
+            $('#createKeysModal').modal('hide');
+            break;
+        default:
+            nextStep = 'initial';
+            break;
+    }
+
+    displayStep(nextStep);
+    this.setAttribute('data-step', nextStep);
+}
+
+/*  setCustomPrivateKey
+ *
+ *  If user adds its own key, this function will place it in the field
+ *  where the /encrypt API call expects the value to be 
+ */
 function setCustomPrivateKey() {
     const privateKey = document.getElementById('custom-key-form')['custom-privateKey'].value;
     if (!privateKey) {
@@ -27,6 +93,12 @@ function setCustomPrivateKey() {
     return true;
 }
 
+/*  displayStep
+ *
+ *  Util used by the keysModalStateMachine to display the appropiate step
+ *
+ *  @param {String} - currentStep. One of ['initial', 'existing-keys', 'new-keys-result']
+ */
 function displayStep(currentStep) {
     const steps = ['initial', 'existing-keys', 'new-keys-result'];
     steps.forEach((step) => {
@@ -39,6 +111,11 @@ function displayStep(currentStep) {
     });
 }
 
+/*  resetKeyCreationSteps
+ *
+ *  Resets the keysModalStateMachine
+ *
+ */
 function resetKeyCreationSteps() {
     document.getElementById('createKeysBtn').setAttribute('data-step', 'initial');
     document.getElementById('createKeysBtn').setAttribute('disabled', 'true');
@@ -54,7 +131,11 @@ function resetKeyCreationSteps() {
     $('.publicKey').html('');
 }
 
-// Start wizard from beginning
+/*  startWizard
+ *
+ *  Starts wizard from the beginning. Also used by restart function.
+ *
+ */
 function startWizard() {
     wizardOn = true;
     $('#instructions-container').hide();
@@ -75,12 +156,46 @@ function startWizard() {
     openStorefrontModal();
 }
 
-function emptyExecutionCode() {
-    $("#encrypted-code").html('');
-}
+/*  copyToClipboard
+ *
+ *  Util to copy the generated pair of keys into the clipboard
+ *
+ */
+function copyToClipboard(key) {
+    /* Get the text field */
+    const copyText = $(`.${key} > pre`).html();
+    const fallbackCopyTextToClipboard = () => {
+        console.log(copyText);
+        var textArea = document.createElement("textarea");
+        textArea.value = copyText;
 
-function secureCall() {
-    eval($("#encrypted-code").html());
+        // Avoid scrolling to bottom
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        textArea.setSelectionRange(0, 99999);
+        document.body.removeChild(textArea);
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            alert('Unable to copy. Your browser does not support copy-to-clipboard functionality.',
+                'Please select key and save its content manually');
+        }
+    };
+
+    if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(copyText);
+        return;
+    }
+    navigator.clipboard.writeText(copyText).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+    });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -103,42 +218,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
     createKeysBtn.setAttribute('data-step', 'initial');
-    createKeysBtn.onclick = function () {
-        const step = this.getAttribute('data-step');
-        let nextStep;
-        switch (step) {
-            case 'initial':
-                const radios = document.getElementsByName('radio-keys');
-                for (var i = 0, length = radios.length; i < length; i++) {
-                    if (radios[i].checked) {
-                        nextStep = radios[i].value;
-                        // only one radio can be logically checked, don't check the rest
-                        break;
-                    }
-                }
-                if (nextStep === 'new-keys-result') {
-                    getNewKeys();
-                }
-                break;
-            case 'existing-keys':
-                // Check that key has been provided
-                nextStep = step;
-                if (setCustomPrivateKey()) {
-                    $('#createKeysModal').modal('hide');
-                }
-                break;
-            case 'new-keys-result':
-                nextStep = step;
-                $('#createKeysModal').modal('hide');
-                break;
-            default:
-                nextStep = 'initial';
-                break;
-        }
-
-        displayStep(nextStep);
-        this.setAttribute('data-step', nextStep);
-    };
+    createKeysBtn.onclick = keysModalStateMachine;
 
     // Initial render of the JSON editor
     const container = document.getElementById('jsoneditor');
@@ -198,40 +278,3 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }, false);
 })();
-
-function copyToClipboard(key) {
-    /* Get the text field */
-    const copyText = $(`.${key} > pre`).html();
-    const fallbackCopyTextToClipboard = () => {
-        console.log(copyText);
-        var textArea = document.createElement("textarea");
-        textArea.value = copyText;
-
-        // Avoid scrolling to bottom
-        textArea.style.top = '0';
-        textArea.style.left = '0';
-        textArea.style.position = 'fixed';
-
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        textArea.setSelectionRange(0, 99999);
-        document.body.removeChild(textArea);
-        try {
-            document.execCommand('copy');
-        } catch (err) {
-            alert('Unable to copy. Your browser does not support copy-to-clipboard functionality.',
-                'Please select key and save its content manually');
-        }
-    };
-
-    if (!navigator.clipboard) {
-        fallbackCopyTextToClipboard(copyText);
-        return;
-    }
-    navigator.clipboard.writeText(copyText).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
-    }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-    });
-}

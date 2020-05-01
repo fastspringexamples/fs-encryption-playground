@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-const port = 8000;
+const port = 9000;
 
 /* POST /encrypt
  * Processes order.completed FastSpring webhook to add buyer's account information
@@ -17,8 +17,12 @@ const port = 8000;
  * @returns {Object} - encrypted payload
  */
 app.post('/encrypt', (req, res) => {
-    const payload = encryptor.encrypt(req.body, req.body.customKey);
-    res.json(payload);
+    try {
+        const payload = encryptor.encrypt(req.body, req.body.customKey);
+        res.json({ success: true, payload });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 });
 
 /* GET /keys/new
@@ -26,10 +30,13 @@ app.post('/encrypt', (req, res) => {
  *
  * @returns {Object} - encrypted payload
  */
-
 app.get('/keys/new', async (req, res) => {
-    const { privateKey, publicCrt } = await encryptor.createNewKeys();
-    res.json({ success: true, keys: { privateKey, publicCrt } });
+    try {
+        const { privateKey, publicCrt } = await encryptor.createNewKeys();
+        res.json({ success: true, keys: { privateKey, publicCrt } });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 });
 
 

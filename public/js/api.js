@@ -15,6 +15,9 @@ function getNewKeys() {
             $('.publicKey').html(`<pre>${resKey.keys.publicCrt}</pre>`);
             // Mark step as marked
             $('#keys-checked').prop('checked', true);
+        } else {
+            alert('An error occurred, please try again');
+            resetKeyCreationSteps();
         }
     });
 }
@@ -56,19 +59,25 @@ function encryptPayload() {
     Http.onreadystatechange = function() {
     if (this.readyState === 4 && this.status === 200) {
         const resEncrypted = JSON.parse(this.responseText);
-        let codeToExec = `
-const securePayload = "${resEncrypted.securePayload}";
-const secureKey = "${resEncrypted.secureKey}";
+        if (resEncrypted.success) {
+            let codeToExec = `
+const securePayload = "${resEncrypted.payload.securePayload}";
+const secureKey = "${resEncrypted.payload.secureKey}";
 
 fastspring.builder.secure(securePayload, secureKey);`;
-        // Check if the current payload contains products in it so that we can call the checkout funciton
-        if (Array.isArray(JSONPayload.items) && JSONPayload.items.length > 0) {
-            codeToExec = `${codeToExec}
+            // Check if the current payload contains products in it so that we can call the checkout funciton
+            if (Array.isArray(JSONPayload.items) && JSONPayload.items.length > 0) {
+                codeToExec = `${codeToExec}
 fastspring.builder.checkout();`;
-        }
+            }
 
-        $('#encrypted-code').html(codeToExec);
+            $('#encrypted-code').html(codeToExec);
+        } else {
+            alert('Problem encrypting payload');
         }
+    } else if (this.readyState === 4 && this.status !== 200) {
+        alert('Problem encrypting payload');
+    }
     };
     Http.send(JSON.stringify(JSONPayload));
 }
