@@ -36,3 +36,8 @@ a.jsoneditor-poweredBy {
 #popupFormStorefront .modal-footer {
     border-top: 0;
 }
+
+#default-product-paths {
+    list-style-type: square;
+    margin-left: 2em;
+}

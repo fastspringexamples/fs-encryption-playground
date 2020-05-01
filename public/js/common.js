@@ -68,6 +68,10 @@ function startWizard() {
     renderJSONEditor({});
     resetKeyCreationSteps();
     storefrontInitialLoad = true;
+    // Edit error modal
+    $('#default-product-paths').hide();
+    $('.wizard-on-errors').show();
+    // Open up storefront modal
     openStorefrontModal();
 }
 

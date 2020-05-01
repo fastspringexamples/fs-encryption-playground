@@ -56,12 +56,18 @@ function encryptPayload() {
     Http.onreadystatechange = function() {
     if (this.readyState === 4 && this.status === 200) {
         const resEncrypted = JSON.parse(this.responseText);
-        $('#encrypted-code').html(`
+        let codeToExec = `
 const securePayload = "${resEncrypted.securePayload}";
 const secureKey = "${resEncrypted.secureKey}";
 
-fastspring.builder.secure(securePayload, secureKey);
-fastspring.builder.checkout();`);
+fastspring.builder.secure(securePayload, secureKey);`;
+        // Check if the current payload contains products in it so that we can call the checkout funciton
+        if (Array.isArray(JSONPayload.items) && JSONPayload.items.length > 0) {
+            codeToExec = `${codeToExec}
+fastspring.builder.checkout();`;
+        }
+
+        $('#encrypted-code').html(codeToExec);
         }
     };
     Http.send(JSON.stringify(JSONPayload));

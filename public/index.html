@@ -64,21 +64,27 @@
                             <div class="card-body">
                                 <p>
                 
-                                    The aim of this tool is to interactively learn how to create custom sessions using the secure method of the Store Builder Library.
+                                    The aim of this tool is to interactively learn how to create <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> custom sessions </a> using the secure method of the <a href="https://fastspring.com/docs/store-builder-library/" target="_blank">Store Builder Library</a>.
                                 </p>
                                 <h5> How does it work? </h5>
-                                <p>
-                                    Use the JSON editor to the left to create your custom payload.
-                                    If the payload is sintactically valid it will be sent to the backend for encryption. Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the custom session.
-                                </p>
+                                <ol>
+                                    <li>Use the JSON editor to the left to create your custom session.
+                                     Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the payload.
+                                    </li>
+                                    <li>
+                                        Click on the <i> Encrypt Payload </i> button. If the payload is sintactically valid it will be sent to the backend for encryption.
+                                    </li>
+                                    <li> A code snippet containing the <a href="https://fastspringexamples.com/method/fastspring-builder-securesecurepayload-securekey/" target="_blank"> secure method </a> using the encrypted payload is generated below. Click on the <i> Execute </i> button to run the code.
+                                    </li>
+                                </ol>
                                 <h5> Testing with your own storefront  </h5>
                                     <p>
                                     Right now you are interacting with an example storefront.
-                                    This tool provides you with a Wizard that will walk you through the steps you need to implement in order to
+                                    This tool provides you with a Wizard that will walk you in more detail through the steps needed to
                                     add custom encrypted payloads using the storefront of your choice.
                                     </p>
                                 <button type="button" id='startWizard' class="btn btn-success"> 
-                                    Take me to the Wizard 
+                                    Open Wizard 
                                 </button>
                             </div>
                         </div>
@@ -126,19 +132,23 @@
                                         </button>
                                     </span>
                                 </div>
+                                    <h5> Creating the payloads </h5>
                                     <p>
                                         After you have chosen your storefront and defined the encryption keys you can start testing custom sessions
                                         using the JSON editor at the left side.
                                     </p>
                                     <p>
-                                        Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the custom session.                                    </p>
+                                        Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the custom session.</p>
+                                    <h5> Encrypt & Execute </h5>
                                     <p>
-                                        Once you have finished creating your session, click on the Encrypt Payload button. The Encryption Wizard will send the raw JSON payload to the backend along with the previously defined private key to encrypt the data.
+                                    Once you have finished creating your session, click on the <i> Encrypt Payload </i> button. The Encryption Wizard will send the raw JSON payload to the backend along with the previously defined private key to encrypt the data.
                                     </p>
                                     <p>
-                                    If the encryption was succesful, you will see the result underneath:
-                                    SBL will pass the encrypted payload and the secure key to the <a href="https://fastspringexamples.com/method/fastspring-builder-securesecurepayload-securekey/" target="_blank"> secure method </a> to upload the current session.
-                                    Lastly, it will execute the <a href="https://fastspringexamples.com/method/fastspring-builder-checkout/" target="_blank"> checkout method </a> to trigger the storefront checkout.
+                                    If the encryption was successful, a code snippet is created underneath: this code will prompt SBL to execute the <a href="https://fastspringexamples.com/method/fastspring-builder-securesecurepayload-securekey/" target="_blank"> secure method </a> using the resulting encrypted payload and secure key as params.
+                                    <br> If the custom session includes products in it, the code will also contain a reference to the <a href="https://fastspringexamples.com/method/fastspring-builder-checkout/" target="_blank"> checkout method </a> to trigger the storefront checkout.
+                                    </p>
+                                    <p>
+                                    Click the <i> Execute </i> button to run the final code.
                                     </p>
 
                                 <button type="button" class="btn btn-success">
@@ -332,11 +342,17 @@
                        <p> There has been a problem executing your custom session. Please double check the following points:
                        <ul>
                            <li> Payload content is not correct: use
-                               <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this resource </a> as a reference on permitted values in the custom session </li>
-                           <li> Payload contains incorrect products: make sure to include  <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> products </a> that have been previously defined in the dashboard and their path is correct. </li>
-                           <li> You forgot to upload the public certificate to your <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> dashboard </a> </li>
-                           <li> If you have provided your own private key, please make sure that it's correct. You can use the wizard to create new ones </li>
-                           <li> I have inputted an incorrect <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> data-access-key </a>: edit the 'Choose custom storefront' step of the Wizard and input the correct one </li>
+                               <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this resource </a> as a reference on permitted values in the custom session. </li>
+
+
+                           <li> Payload contains incorrect products: make sure that if you add products (under the items array) to the payload, these <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> products </a> have been previously defined in the dashboard and their path is correct. 
+                               <li id="default-product-paths"> In this storefront you can use the products paths "phot-io-main-app" and "cam-pack". </li>
+                           </li>
+                           <div class="wizard-on-errors" style="display:none">
+                               <li> You forgot to upload the public certificate to your <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> dashboard</a>. </li>
+                               <li> If you have provided your own private key, please make sure that it's correct. You can use the wizard to create new ones.</li>
+                               <li> You have inputted an incorrect <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> data-access-key</a>: edit the 'Choose custom storefront' step of the Wizard and input the correct one. </li>
+                        </div>
                        </ul>
                        </p>
                     </div>
