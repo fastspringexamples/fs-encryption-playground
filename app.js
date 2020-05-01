@@ -10,7 +10,7 @@ const port = process.env.PORT || 9000;
 
 /* POST /encrypt
  * Encrypts the custom payload found in the body of the request. If a customKey is provided,
- * it will be used for the encryption. Otherwise, it will default to the fastspringexamplessII store
+ * it will be used for the encryption. Otherwise, it will default to the keys used in fastspringexamplessII store
  *
  * @param {String} - custom session payload to encrypt
  * @param {String} - optional custom key in case user is testing its own storefront
