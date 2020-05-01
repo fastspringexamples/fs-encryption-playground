@@ -9,8 +9,8 @@ app.use(express.static('public'));
 const port = process.env.PORT || 9000;
 
 /* POST /encrypt
- * Processes order.completed FastSpring webhook to add buyer's account information
- * to database.
+ * Encrypts the custom payload found in the body of the request. If a customKey is provided,
+ * it will be used for the encryption. Otherwise, it will default to the fastspringexamplessII store
  *
  * @param {String} - custom session payload to encrypt
  * @param {String} - optional custom key in case user is testing its own storefront
