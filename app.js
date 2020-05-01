@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-const port = 9000;
+const port = process.env.PORT || 9000;
 
 /* POST /encrypt
  * Processes order.completed FastSpring webhook to add buyer's account information
