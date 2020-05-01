@@ -7,6 +7,13 @@ const fs = require('fs');
 const path = require('path');
 const NodeOpenssl = require('node-openssl-cert');
 
+/*  createNewKeys
+ *  It creates a pair of RSA-2048 bits private key and public certificate using OpenSSL.
+ *  The public certificate is self-signed with just FastSpringExamples as organization name.
+ *  This self-generated certificate only serves the purpose of estabilishing a secure connection between FastSpring
+ *  and the vendor's site to create custom payloads. It is not meant to be used as an SSL certificate for your website
+ *  since FastSpring is not a Certificate Authority.
+ */
 function createNewKeys() {
     const openssl = new NodeOpenssl();
 
@@ -23,12 +30,12 @@ function createNewKeys() {
     };
 
     return new Promise((resolve, reject) => {
-        openssl.generateRSAPrivateKey(rsakeyoptions, function (err, privateKey, cmd) {
-            openssl.generateCSR(csroptions, privateKey, null, function (err, csr, cmd) {
+        openssl.generateRSAPrivateKey(rsakeyoptions, function (err, privateKey) {
+            openssl.generateCSR(csroptions, privateKey, null, function (err, csr) {
                 if (err) {
                     reject(err);
                 } else {
-                    openssl.selfSignCSR(csr, {}, privateKey, null, function(err, publicCrt, cmd) {
+                    openssl.selfSignCSR(csr, {}, privateKey, null, function(err, publicCrt) {
                         resolve({ privateKey, publicCrt });
                     });
                 }
@@ -37,7 +44,14 @@ function createNewKeys() {
     });
 }
 
-// TODO add error handling
+/*  encrypt
+ *  Util function to encrypt the given payload. If customKey is not provided it will use
+ *  fastspringexamplesII encryption keys
+ *
+ *  @param {String} - custom session payload to encrypt
+ *  @param {String} - optional custom key in case user is testing its own storefront
+ *  @returns {Object} - encrypted payload
+ */
 function encrypt(payload, customKey) {
     const privateKey = customKey || fs.readFileSync(path.join(__dirname, '../keys/privatekey.pem'), 'utf8');
     const aesKey = crypto.randomBytes(16);
