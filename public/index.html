@@ -72,7 +72,7 @@
                                      Visit <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>  to see all the attributes that can be added to the payload.
                                     </li>
                                     <li>
-                                        Click on the <i> Encrypt Payload </i> button. If the payload is sintactically valid it will be sent to the backend for encryption.
+                                        Click on the <i> Encrypt Payload </i> button. If the payload is syntactically valid it will be sent to the backend for encryption.
                                     </li>
                                     <li> A code snippet containing the <a href="https://fastspringexamples.com/method/fastspring-builder-securesecurepayload-securekey/" target="_blank"> secure method </a> using the encrypted payload is generated below. Click on the <i> Execute </i> button to run the code.
                                     </li>
@@ -259,7 +259,7 @@
                             </div>
                             <div id="new-keys-result-container" style="display:none">
                                 <p> A pair of public and private keys have been created for you at the bottom of this modal using
-                                <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> OpenSSL<a/>, as described in
+                                <a href="https://www.openssl.org/" target="_blank"> OpenSSL<a/>, as described in
                                 <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a>.</p>
                                 
                                 <p> You will need to create two files containing the keys. Use the code editor of your choice and copy the content of each key using the copy-clip-board icon. Save the files as <b> private.pem </b> and <b>  public.crt </b>
@@ -309,11 +309,11 @@
                                 <ul>
                                     <li>
                                         <b> private.pem: </b> Always make sure to securely store
-                                            this key in your system and don't share it with others unless it's meant for testing purporses.
-                                            You will use the private key to do the payload encryption in your backend. You can check this <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a> for implementation examples in PHP, Java and NodeJS. For this tool, The Encryption Wizard will do encryption on your behalf using this key so that you can focus on testing payloads.
+                                            this key in your system and don't share it with others unless it's meant for testing purposes.
+                                            You will use the private key to do the payload encryption in your backend. You can check <a href="https://fastspring.com/docs/passing-sensitive-data-with-secure-requests/" target="_blank"> this article</a> for implementation examples in PHP, Java and NodeJS. For this tool, The Encryption Wizard will do encryption on your behalf using this key so that you can focus on testing payloads.
                                     </li>
                                     <li>
-                                        <b>  public.crt: </b> FastSpring will use the public certificate to verify that the encrypted payload comes from you. Make sure to upload the public certificate file to the FastSpring dashboard under the Store Builder Library section of the <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> Integrations menu. </a>. Remember to click the Save button once you have uploaded the file.
+                                        <b>  public.crt: </b> FastSpring will use the public certificate to verify that the encrypted payload comes from you. Make sure to upload the public certificate file to the FastSpring dashboard under the Store Builder Library section of the <a href="https://fastspring.com/docs/integrations#sbl" target="_blank"> Integrations menu</a>. Remember to click the Save button once you have uploaded the file.
                                     </li>
                                     
                                 </ul>
@@ -359,7 +359,7 @@
                 </div>
              </div>
         </div>
-
+            
     <script
         id="fsc-api"
         src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.0/fastspring-builder.min.js"
