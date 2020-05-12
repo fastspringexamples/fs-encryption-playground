@@ -64,6 +64,8 @@ function setCustomStorefront() {
             $('#error-storefrontId').removeClass('hidden');
             return false;
         }
+        // Check if there is a storefront already loaded on the page and delete it
+        deleteCurrentStorefront();
         // Remove error styles if user previously tried to load an invalid storefront
         $('#storefrontId').removeClass('is-invalid');
         $('#incorrect-storefront').hide();
