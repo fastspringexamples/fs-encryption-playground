@@ -5,6 +5,7 @@ The backend consists of two open endpoints that be used indepent of the frontend
 - `GET /keys/new`: get a pair of RSA-2048 bits private key and a self-signed certificate
 - `POST /encrypt`: encrypt the custom payload found in the body of the request. If a customKey is provided, it will be used for the encryption. Otherwise, it will default to the fastspringexamplessII store
 
+## Live demo
 You can interact with the live demo [here](https://fs-encryption.herokuapp.com/).
 
 ## Requirements
